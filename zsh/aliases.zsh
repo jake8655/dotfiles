@@ -1,4 +1,4 @@
-alias nf='neofetch'
+alias pf='pfetch'
 alias ls="eza --icons --group-directories-first --git -@1 -l -la -lb -m"
 alias lsb="eza --icons --group-directories-first --git -@1 -G -l -la -lb -m"
 alias c="clear && printf '\e[3J' && pfetch"
