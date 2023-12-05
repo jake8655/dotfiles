@@ -1,0 +1,280 @@
+{
+  "layer": "top", // Waybar at top layer
+  "position": "top", // Waybar position (top|bottom|left|right)
+  //"gtk-layer-shell": "false",
+  "height": 46, // Waybar height (to be removed for auto height)
+  // "width": 2560, // Waybar width
+  "spacing": 0, // Gaps between modules (0px) Adjusted in the css
+  "margin-top": 0,
+  //"margin-bottom":-10,
+  "margin-left": 10,
+  "margin-right": 10,
+  // Choose the order of the modules
+  "modules-left": [
+    "custom/launcher",
+    "hyprland/workspaces",
+    "cpu",
+    "memory",
+    "temperature",
+    "disk"
+    // "custom/updates"
+  ],
+  "modules-center": [
+    // "custom/music"
+    // "custom/cava"
+    "cava"
+  ],
+  "modules-right": [
+    "network",
+    "pulseaudio",
+    "custom/notifications",
+    "tray",
+    "clock",
+    // "custom/weather",
+    "custom/cycle_wall",
+    // "custom/clipboard",
+    "custom/power",
+    "custom/custom"
+  ],
+  "custom/launcher": {
+    "format": "{}",
+    "tooltip": true,
+    "exec": "echo '{\"text\":\" \",\"tooltip\":\"Run\"}'",
+    "return-type": "json",
+    "on-click": "pkill wofi || wofi --show drun -n",
+    "on-click-right": "pkill wofi || wofi --show run -n"
+  },
+  "hyprland/workspaces": {
+    "format": "",
+    "format-icons": {
+      "active": "",
+      "default": ""
+    },
+    "on-scroll-up": "hyprctl dispatch workspace e-1",
+    "on-scroll-down": "hyprctl dispatch workspace e+1",
+    "on-click": "activate"
+  },
+  "cpu": {
+    "format": " {usage}%",
+    "tooltip": true,
+    "on-click": "kitty --start-as=fullscreen --title all_is_kitty sh -c 'btop'",
+    "interval": 2
+  },
+  "memory": {
+    "format": " {}%",
+    "tooltip": true,
+    "on-click": "kitty --start-as=fullscreen --title all_is_kitty sh -c 'btop'",
+    "interval": 2
+  },
+  "temperature": {
+    // "thermal-zone": 2,
+    // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+    "critical-threshold": 40,
+    "format-critical": "{icon} {temperatureC}°C",
+    "format": "{icon} {temperatureC}°C",
+    "format-icons": ["", "", ""],
+    "tooltip": true,
+    "on-click": "kitty --start-as=fullscreen --title all_is_kitty sh -c 'btop'",
+    "interval": 2
+  },
+  "disk": {
+    "format": " {percentage_used}% ({free})",
+    "tooltip": true,
+    "path": "/home/jake",
+    "on-click": "kitty --start-as=fullscreen --title all_is_kitty sh -c 'btop'",
+    "interval": 2
+  },
+  "custom/updates": {
+    "format": "{}",
+    "exec": "~/.scripts/updates",
+    "on-click": "~/.scripts/updates update",
+    "interval": 600,
+    "tooltip": true
+    // "tooltip-format": "{}",
+    // "exec-tooltip": "~/.scripts/updates tooltip"
+  },
+  // "custom/cava": {
+  //     "custom/cava": {
+  //         "exec": "sleep 3 && cava -p /home/jake/.config/cava/waybar-cava.conf | sed -u 's/;//g;s/0/0/g;s/1/1/g;s/2/2/g;s/3/3/g;s/4/4/g;s/5/5/g;s/6/6/g;s/7/7/g;s/8/8/g;s/9/9/g;'"
+  //     }
+  // },
+  "cava": {
+    "framerate": 30,
+    "autosens": 1,
+    "bars": 14,
+    "lower_cutoff_freq": 50,
+    "higher_cutoff_freq": 10000,
+    "method": "pipewire",
+    "source": "auto",
+    "stereo": true,
+    "reverse": false,
+    "bar_delimiter": 0,
+    "monstercat": false,
+    "waves": false,
+    "hide_on_silence": true,
+    "sleep_timer": 2,
+    "noise_reduction": 0.77,
+    "input_delay": 0.5,
+    "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+    // "format": "{icon}{}",
+    // "format-icons": {
+    //     "Playing":["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" ], // Uncomment if not using the dynamic script
+    //     "Paused": " ",
+    //     "Stopped": "&#x202d;ﭥ " // This stop symbol is RTL. So &#x202d; is left-to-right override.
+    // },
+    // "escape": true,
+    // "tooltip": true,
+    // "return-type": "json",
+    "on-click": "playerctl play-pause",
+    "on-scroll-up": "playerctl next",
+    "on-scroll-down": "playerctl previous"
+    // "actions": {
+    //    "on-click-right": "mode"
+    // }
+  },
+  "custom/music": {
+    "format": "{icon}{}",
+    "format-icons": {
+      // "Playing": " ", // Uncomment if not using the dynamic script
+      "Paused": " ",
+      "Stopped": "&#x202d;ﭥ " // This stop symbol is RTL. So &#x202d; is left-to-right override.
+    },
+    "escape": true,
+    "tooltip": true,
+    "exec": "~/.scripts/caway -b 10",
+    "return-type": "json",
+    "on-click": "playerctl play-pause",
+    "on-scroll-up": "playerctl previous",
+    "on-scroll-down": "playerctl next",
+    "on-click-right": "g4music",
+    "max-length": 35
+  },
+  "hyprland/window": {
+    "format": "{}",
+    "separate-outputs": true,
+    "max-length": 35
+  },
+  "network": {
+    // "interface": "wlp2*", // (Optional) To force the use of this interface
+    "format": "↕{bandwidthTotalBytes}",
+    "format-disconnected": "{icon} No Internet",
+    "format-linked": " {ifname} (No IP)",
+    "format-alt": "↕{bandwidthUpBytes} | ↕{bandwidthDownBytes}",
+    "tooltip-format": "{ifname}: {ipaddr}/{cidr}  {gwaddr}",
+    "tooltip-format-wifi": "{icon} {essid} ({signalStrength}%)",
+    "tooltip-format-ethernet": "{icon} {ipaddr}/{cidr}",
+    "tooltip-format-disconnected": "{icon} Disconnected",
+    "on-click-right": "nm-connection-editor",
+    "format-icons": {
+      "ethernet": "",
+      "disconnected": "⚠",
+      "wifi": ["睊", "直"]
+    },
+    "interval": 2
+  },
+  "pulseaudio": {
+    // "scroll-step": 1, // %, can be a float
+    "format": "{icon} {volume}%", // {format_source}
+    "format-bluetooth": "{icon} {volume}%", // {format_source}
+    "format-bluetooth-muted": "", // {format_source}
+    "format-muted": "", // {format_source}
+    "format-source": "{volume}% ",
+    "format-source-muted": "",
+    "format-icons": {
+      "headphone": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": " ",
+      "default": ["", "", ""]
+    },
+    "on-click": "pavucontrol"
+  },
+  "custom/notifications": {
+    "tooltip": false,
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "<span foreground='red'><sup></sup></span>",
+      "none": "",
+      "dnd-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-none": ""
+    },
+    "return-type": "json",
+    "exec-if": "which swaync-client",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
+  },
+  "tray": {
+    "icon-size": 15,
+    "spacing": 15
+  },
+  "clock": {
+    "timezone": "Europe/Bratislava",
+    "format": " {:%d <small>%a</small> %H:%M}",
+    //"format": " {:%a %b %d %Y | %H:%M}",
+    "format-alt": " {:%A %B %d %Y (%V) | %r}",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "calendar-weeks-pos": "right",
+    "today-format": "<span color='#f38ba8'><b><u>{}</u></b></span>",
+    "format-calendar": "<span color='#f2cdcd'><b>{}</b></span>",
+    "format-calendar-weeks": "<span color='#94e2d5'><b>W{:%U}</b></span>",
+    "format-calendar-weekdays": "<span color='#f9e2af'><b>{}</b></span>",
+    "interval": 1
+  },
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "",
+      "deactivated": ""
+    }
+  },
+  "custom/weather": {
+    "tooltip": true,
+    "format": "{}",
+    "exec": "~/.scripts/tools/expand weather",
+    "return-type": "json"
+  },
+  "custom/ss": {
+    "format": "{}",
+    "exec": "~/.scripts/tools/expand ss-icon",
+    "return-type": "json",
+    "on-click": "~/.scripts/screenshot_full"
+  },
+  "custom/cycle_wall": {
+    "format": "{}",
+    "exec": "~/.dotfiles/scripts/tools/expand wall",
+    "return-type": "json",
+    // "interval": 1,
+    "on-click": "~/.dotfiles/scripts/tools/expand cycle",
+    "on-click-right": "~/.dotfiles/scripts/tools/expand cycler"
+  },
+  "custom/clipboard": {
+    "format": "{}",
+    "exec": "~/.dotfiles/scripts/tools/expand clipboard",
+    "return-type": "json",
+    // Window position is managed in Hyperland config's windowrulev2
+    "on-click": "pkill tofi || cliphist list | gamemoderun tofi -c ~/.dotfiles/tofi/tofi.clip.conf | cliphist decode | wl-copy",
+    "on-click-middle": "rm -f ~/.cache/cliphist/db",
+    "on-click-right": "pkill tofi || cliphist list | gamemoderun tofi -c ~/.dotfiles/tofi/tofi.clip.conf | cliphist delete",
+    // Here "-l top_right -x -15 -y 10" doesn't matter as '-n' mode is used
+    // "on-click": "pkill wofi || cliphist list | wofi --dmenu -p clippick -l top_right -x -15 -y 10 -n | cliphist decode | wl-copy",
+    // "on-click-middle": "rm -f ~/.cache/cliphist/db",
+    // "on-click-right": "pkill wofi || cliphist list | wofi --dmenu -p clippick -l top_right -x -15 -y 10 -n | cliphist delete",
+    "escape": true
+  },
+  "custom/power": {
+    "format": "{}",
+    // "exec": "~/.scripts/tools/expand power",
+    "exec": "echo '{\"text\":\"⏻\",\"tooltip\":\"Power\"}'",
+    "return-type": "json",
+    "on-click": "~/.dotfiles/wlogout/launch.sh"
+  },
+  "custom/custom": {
+    "format": "{}",
+    "exec": "~/.dotfiles/scripts/tools/expand arrow-icon",
+    "on-click": "~/.dotfiles/scripts/tools/expand_toolbar",
+    "return-type": "json"
+  }
+}

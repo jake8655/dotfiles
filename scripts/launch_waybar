@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+killall -q waybar
+
+# env GTK_DEBUG=interactive
+waybar -l info -c ~/.dotfiles/waybar/config.jsonc -s ~/.dotfiles/waybar/style.css > /tmp/waybar.log 2>&1 & disown

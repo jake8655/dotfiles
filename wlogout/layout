@@ -1,0 +1,36 @@
+{
+  "label": "lock",
+  "text": "Lock",
+  "action": "~/.dotfiles/wlogout/actions lock",
+  "keybind": "l"
+}
+{
+  "label": "hibernate",
+  "text": "Hibernate",
+  "action": "~/.dotfiles/wlogout/actions hibernate",
+  "keybind": "h"
+}
+{
+  "label": "suspend",
+  "text": "Suspend",
+  "action": "~/.dotfiles/wlogout/actions suspend",
+  "keybind": "u"
+}
+{
+  "label": "reboot",
+  "text": "Reboot",
+  "action": "~/.dotfiles/wlogout/actions reboot",
+  "keybind": "r"
+}
+{
+  "label": "logout",
+  "text": "Logout",
+  "action": "~/.dotfiles/wlogout/actions logout",
+  "keybind": "e"
+}
+{
+  "label": "shutdown",
+  "text": "Shutdown",
+  "action": "~/.dotfiles/wlogout/actions shutdown",
+  "keybind": "s"
+}

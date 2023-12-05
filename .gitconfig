@@ -1,0 +1,18 @@
+[credential "https://github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+[init]
+	defaultBranch = main
+[user]
+	email = dominik8655@gmail.com
+	name = Jake
+	signingKey = /home/jake/.ssh/id_ed25519.pub
+[commit]
+	gpgSign = true
+[gpg]
+	format = ssh
+[core]
+	editor = nvim
