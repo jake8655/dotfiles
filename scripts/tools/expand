@@ -14,7 +14,11 @@ change () {
         index=0
     fi
     echo $index > $TEMP
-    $scripts/wall "${files[$index]}"
+    if (( $1 > 0 )); then
+        $scripts/wall "${files[$index]}"
+    else
+        $scripts/wall "${files[$index]}" --backwards
+    fi
     exit 0
 }
 
