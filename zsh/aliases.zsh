@@ -41,3 +41,21 @@ function spj() {
 
   cd ~/Desktop/projects/school/$SCHOOL_PROJECT_DIR
 }
+
+function timer() {
+    start="$(( $(date '+%s') + $1))"
+    while [ $start -ge $(date +%s) ]; do
+        ttime="$(( $start - $(date +%s) ))"
+        printf '%s\r' "$(date -u -d "@$ttime" +%H:%M:%S)"
+        sleep 0.1
+    done
+}
+
+function stopwatch() {
+    start=$(date +%s)
+    while true; do
+        ttime="$(( $(date +%s) - $start))"
+        printf '%s\r' "$(date -u -d "@$ttime" +%H:%M:%S)"
+        sleep 0.1
+    done
+}
