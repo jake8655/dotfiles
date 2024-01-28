@@ -1,6 +1,64 @@
 -- Utilities for creating configurations
 local util = require 'formatter.util'
 
+---@param fileName string
+local function isFilePresentInCWD(fileName)
+  local cwDir = vim.fn.getcwd()
+
+  -- Get all files and directories in CWD
+  local cwdContent = vim.split(vim.fn.glob(cwDir .. '/*'), '\n', { trimempty = true })
+
+  -- Check if specified file or directory exists
+  local fullNameToCheck = cwDir .. '/' .. fileName
+  for _, cwdItem in pairs(cwdContent) do
+    if cwdItem == fullNameToCheck then
+      return true
+    end
+  end
+  return false
+end
+
+local WEB_LANGUAGES = { 'html', 'css', 'json', { 'jsonc', 'json' }, 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', { 'astro', 'defaults' } }
+
+---@param lang string
+local function prettierOrBiome(lang)
+  if isFilePresentInCWD 'biome.json' then
+    if lang == 'defaults' then
+      return require('formatter.' .. lang).biome
+    else
+      return require('formatter.filetypes.' .. lang).biome
+    end
+  else
+    if lang == 'defaults' then
+      return require('formatter.' .. lang).prettier
+    else
+      return require('formatter.filetypes.' .. lang).prettier
+    end
+  end
+end
+
+local web_langs_config = {}
+for _, lang in pairs(WEB_LANGUAGES) do
+  if type(lang) == 'table' then
+    web_langs_config[lang[1]] = prettierOrBiome(lang[2])
+  else
+    web_langs_config[lang] = prettierOrBiome(lang)
+  end
+end
+
+---@param table1 table
+---@param table2 table
+local function spread(table1, table2)
+  local result = {}
+  for k, v in pairs(table1) do
+    result[k] = v
+  end
+  for k, v in pairs(table2) do
+    result[k] = v
+  end
+  return result
+end
+
 -- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
 require('formatter').setup {
   -- Enable or disable logging
@@ -8,7 +66,7 @@ require('formatter').setup {
   -- Set the log level
   log_level = vim.log.levels.WARN,
   -- All formatter configurations are opt-in
-  filetype = {
+  filetype = spread({
     -- Formatter configurations for filetype "lua" go here
     -- and will be executed in order
     lua = {
@@ -28,35 +86,6 @@ require('formatter').setup {
           stdin = true,
         }
       end,
-    },
-
-    -- Web development
-    html = {
-      require('formatter.filetypes.html').prettier,
-    },
-    css = {
-      require('formatter.filetypes.css').prettier,
-    },
-    json = {
-      require('formatter.filetypes.json').prettier,
-    },
-    jsonc = {
-      require('formatter.filetypes.json').prettier,
-    },
-    javascript = {
-      require('formatter.filetypes.javascript').prettier,
-    },
-    javascriptreact = {
-      require('formatter.filetypes.javascriptreact').prettier,
-    },
-    typescript = {
-      require('formatter.filetypes.typescript').prettier,
-    },
-    typescriptreact = {
-      require('formatter.filetypes.typescriptreact').prettier,
-    },
-    astro = {
-      require('formatter.defaults').prettier,
     },
 
     -- Python
@@ -85,7 +114,7 @@ require('formatter').setup {
       -- filetype
       require('formatter.filetypes.any').remove_trailing_whitespace,
     },
-  },
+  }, web_langs_config),
 }
 
 vim.keymap.set('n', '<leader>h', vim.cmd.Format, { desc = '[F]ormat current buffer' })

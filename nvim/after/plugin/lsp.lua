@@ -66,13 +66,50 @@ end
 --
 --  If you want to override the default filetypes that your language server will attach to you can
 --  define the property 'filetypes' to the map in question.
-local servers = {
+
+---@param fileName string
+local function isFilePresentInCWD(fileName)
+  local cwDir = vim.fn.getcwd()
+
+  -- Get all files and directories in CWD
+  local cwdContent = vim.split(vim.fn.glob(cwDir .. '/*'), '\n', { trimempty = true })
+
+  -- Check if specified file or directory exists
+  local fullNameToCheck = cwDir .. '/' .. fileName
+  for _, cwdItem in pairs(cwdContent) do
+    if cwdItem == fullNameToCheck then
+      return true
+    end
+  end
+  return false
+end
+
+---@param table1 table
+---@param table2 table
+local function spread(table1, table2)
+  local result = {}
+  for k, v in pairs(table1) do
+    result[k] = v
+  end
+  for k, v in pairs(table2) do
+    result[k] = v
+  end
+  return result
+end
+
+local js_linter = {}
+if isFilePresentInCWD 'biome.json' then
+  js_linter.biome = {}
+else
+  js_linter.eslint = {}
+end
+
+local servers = spread({
   -- Ensure installed
   astro = {},
   bashls = {},
   cssls = {},
   dockerls = {},
-  eslint = {},
   jsonls = {},
   pyright = {},
   tailwindcss = {},
@@ -99,7 +136,7 @@ local servers = {
       telemetry = { enable = false },
     },
   },
-}
+}, js_linter)
 
 -- Setup neovim lua configuration
 require('neodev').setup()
@@ -116,7 +153,14 @@ mason_lspconfig.setup {
 }
 
 mason_lspconfig.setup_handlers {
+  ---@param server_name string
   function(server_name)
+    if server_name == 'eslint' and isFilePresentInCWD 'biome.json' then
+      return
+    elseif server_name == 'biome' and not isFilePresentInCWD 'biome.json' then
+      return
+    end
+
     require('lspconfig')[server_name].setup {
       capabilities = capabilities,
       on_attach = on_attach,
@@ -125,37 +169,40 @@ mason_lspconfig.setup_handlers {
     }
   end,
 }
-require('lspconfig').eslint.setup {
-  on_attach = function(client, bufnr)
-    -- Disable hover and similar features for eslint-lsp
-    client.server_capabilities.documentHighlight = false
-    client.server_capabilities.hoverProvider = false
-    client.server_capabilities.signatureHelp = false
-    client.server_capabilities.renameProvider = false
-    client.server_capabilities.completion = false
-    client.server_capabilities.codeAction = true
-    client.server_capabilities.documentFormattingProvider = false
-    client.server_capabilities.documentRangeFormatting = false
-    client.server_capabilities.documentSymbol = false
-    client.server_capabilities.workspaceSymbol = false
-    client.server_capabilities.codeLens = false
-    client.server_capabilities.declaration = false
-    client.server_capabilities.definition = false
-    client.server_capabilities.typeDefinition = false
-    client.server_capabilities.implementation = false
-    client.server_capabilities.references = false
-    client.server_capabilities.documentHighlight = false
-    -- require('lspconfig').on_attach(client, bufnr)
 
-    vim.api.nvim_create_autocmd('BufWritePre', {
-      buffer = bufnr,
-      command = 'EslintFixAll',
-    })
-  end,
-}
+if not isFilePresentInCWD 'biome.json' then
+  require('lspconfig').eslint.setup {
+    on_attach = function(client, bufnr)
+      -- Disable hover and similar features for eslint-lsp
+      client.server_capabilities.documentHighlight = false
+      client.server_capabilities.hoverProvider = false
+      client.server_capabilities.signatureHelp = false
+      client.server_capabilities.renameProvider = false
+      client.server_capabilities.completion = false
+      client.server_capabilities.codeAction = true
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormatting = false
+      client.server_capabilities.documentSymbol = false
+      client.server_capabilities.workspaceSymbol = false
+      client.server_capabilities.codeLens = false
+      client.server_capabilities.declaration = false
+      client.server_capabilities.definition = false
+      client.server_capabilities.typeDefinition = false
+      client.server_capabilities.implementation = false
+      client.server_capabilities.references = false
+      client.server_capabilities.documentHighlight = false
+      -- require('lspconfig').on_attach(client, bufnr)
+
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        buffer = bufnr,
+        command = 'EslintFixAll',
+      })
+    end,
+  }
+end
 vim.keymap.set('n', '<leader>m', vim.cmd.Mason)
 
--- [[ Configure nvim-cmp ]]
+-- Configure nvim-cmp
 -- See `:help cmp`
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
