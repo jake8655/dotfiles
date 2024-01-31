@@ -1,5 +1,6 @@
 alias pf='pfetch'
 alias ls="eza --icons --group-directories-first --git -@1 -l -la -lb -m"
+alias lst="eza --icons --group-directories-first --git -@1 -l -la -lb -m -snew"
 alias lsb="eza --icons --group-directories-first --git -@1 -G -l -la -lb -m"
 alias c="clear && printf '\e[3J' && pfetch"
 alias so="source"
