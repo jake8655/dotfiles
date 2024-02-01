@@ -102,6 +102,9 @@ source $ZSH/oh-my-zsh.sh
 
 bindkey -v
 
+# Pipx
+export PATH="$HOME/.local/bin:$PATH"
+
 # Fast Node Manager (fnm)
 eval "$(fnm env --use-on-cd)"
 
