@@ -107,6 +107,11 @@ require('formatter').setup {
       require('formatter.filetypes.c').clangformat,
     },
 
+    -- Toml
+    toml = {
+      require('formatter.filetypes.toml').taplo,
+    },
+
     -- Use the special "*" filetype for defining formatter configurations on
     -- any filetype
     ['*'] = {
