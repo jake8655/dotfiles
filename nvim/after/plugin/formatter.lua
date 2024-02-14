@@ -98,6 +98,11 @@ require('formatter').setup {
       require('formatter.filetypes.rust').rustfmt,
     },
 
+    -- God
+    go = {
+      require('formatter.filetypes.go').gofumpt,
+    },
+
     -- C++
     cpp = {
       require('formatter.filetypes.cpp').clangformat,
