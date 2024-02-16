@@ -98,7 +98,7 @@ require('formatter').setup {
       require('formatter.filetypes.rust').rustfmt,
     },
 
-    -- God
+    -- Go
     go = {
       require('formatter.filetypes.go').gofumpt,
     },

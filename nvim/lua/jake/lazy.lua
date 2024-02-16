@@ -130,6 +130,21 @@ require('lazy').setup({
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
 
+      -- Crates.io utilities
+      {
+        'nvimtools/none-ls.nvim',
+        config = function()
+          require('null-ls').setup {}
+        end,
+      },
+      {
+        'saecki/crates.nvim',
+        tag = 'stable',
+        dependencies = {
+          'nvimtools/none-ls.nvim',
+        },
+      },
+
       -- Code formatter
       'mhartington/formatter.nvim',
     },
