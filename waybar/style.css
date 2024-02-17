@@ -114,16 +114,16 @@
   padding-right: 8px;
 }
 
-#workspaces * {
-  font-size: 0px;
-}
+/* #workspaces * { */
+/*   font-size: 0px; */
+/* } */
 
 #workspaces button {
   background-color: @surface3;
   color: @mauve;
   border-radius: 100%;
-  min-height: 14px;
-  min-width: 14px;
+  min-height: 22px;
+  min-width: 22px;
   margin: 5px 8px;
   padding: 0px;
   /*transition: all 0.5s cubic-bezier(0.33, 1.0, 0.68, 1.0); easeInOutCubic */
@@ -161,6 +161,8 @@
   background-size: 400% 400%;
   animation: gradient_f 20s ease-in-out infinite;
   transition: all 0.3s cubic-bezier(0.55, -0.68, 0.48, 1.682);
+  color: @surface3;
+  font-weight: bold;
 }
 
 #workspaces button:hover {
