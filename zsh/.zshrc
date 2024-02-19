@@ -108,6 +108,9 @@ export PATH="$HOME/.local/bin:$PATH"
 # Fast Node Manager (fnm)
 eval "$(fnm env --use-on-cd)"
 
+# Cargo
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # Syntax highlighting
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
