@@ -12,6 +12,8 @@ alias vim="nvim"
 alias v="vim"
 alias diskusage="ncdu"
 alias tms="~/.dotfiles/scripts/tmux-sessionizer"
+# Connect to my bluetooth headphones
+alias hp="bluetoothctl connect C4:58:48:FD:28:84"
 
 # Browse projects
 function pj() {
