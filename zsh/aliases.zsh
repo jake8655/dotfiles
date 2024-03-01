@@ -14,6 +14,7 @@ alias diskusage="ncdu"
 alias tms="~/.dotfiles/scripts/tmux-sessionizer"
 # Connect to my bluetooth headphones
 alias hp="bluetoothctl connect C4:58:48:FD:28:84"
+alias dhp="bluetoothctl disconnect"
 
 # Browse projects
 function pj() {
