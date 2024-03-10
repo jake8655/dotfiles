@@ -187,6 +187,9 @@ require('lazy').setup({
     end,
   },
 
+  -- Practice vim commands
+  'ThePrimeagen/vim-be-good',
+
   -- require 'kickstart.plugins.autoformat',
 }, {
   ui = { border = 'rounded' },
