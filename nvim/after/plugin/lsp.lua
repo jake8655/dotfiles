@@ -124,6 +124,9 @@ local servers = spread({
         enable = true,
         experimental = { enable = true },
       },
+      cargo = {
+        allFeatures = true,
+      },
     },
   },
 
