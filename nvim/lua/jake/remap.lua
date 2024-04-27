@@ -4,7 +4,7 @@ vim.g.maplocalleader = ' '
 vim.keymap.set('n', '<leader>e', vim.cmd.Ex)
 vim.keymap.set('n', '<leader>w', vim.cmd.w)
 vim.keymap.set('n', '<leader>q', vim.cmd.q)
-vim.keymap.set('n', '<leader>so', function()
+vim.keymap.set('n', '<leader><leader>', function()
   vim.cmd.so()
   print('sourced:', vim.fn.expand '%')
 end)
@@ -16,6 +16,10 @@ vim.keymap.set('n', 'n', 'nzzzv')
 vim.keymap.set('n', 'N', 'Nzzzv')
 
 vim.keymap.set('i', '<C-c>', '<Esc>')
+
+-- Quickfix navigation
+vim.keymap.set('n', '<C-j>', '<cmd>cnext<CR>zz')
+vim.keymap.set('n', '<C-k>', '<cmd>cprev<CR>zz')
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`

@@ -46,7 +46,6 @@ local on_attach = function(_, bufnr)
 
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -67,22 +66,30 @@ end
 --  If you want to override the default filetypes that your language server will attach to you can
 --  define the property 'filetypes' to the map in question.
 
----@param fileName string
-local function isFilePresentInCWD(fileName)
+---@param fileNames table<integer, string>
+local function areFilesPresentInCWD(fileNames)
   local cwDir = vim.fn.getcwd()
 
   -- Get all files and directories in CWD
   local cwdContent = vim.split(vim.fn.glob(cwDir .. '/*'), '\n', { trimempty = true })
 
   -- Check if specified file or directory exists
-  local fullNameToCheck = cwDir .. '/' .. fileName
+  local fullNamesToCheck = {}
+  for _, fileName in pairs(fileNames) do
+    table.insert(fullNamesToCheck, cwDir .. '/' .. fileName)
+  end
+
   for _, cwdItem in pairs(cwdContent) do
-    if cwdItem == fullNameToCheck then
-      return true
+    for _, fullNameToCheck in pairs(fullNamesToCheck) do
+      if cwdItem == fullNameToCheck then
+        return true
+      end
     end
   end
   return false
 end
+
+local BIOME_CONFIG = { 'biome.json', 'biome.jsonc' }
 
 ---@param table1 table
 ---@param table2 table
@@ -98,7 +105,7 @@ local function spread(table1, table2)
 end
 
 local js_linter = {}
-if isFilePresentInCWD 'biome.json' then
+if areFilesPresentInCWD(BIOME_CONFIG) then
   js_linter.biome = {}
 else
   js_linter.eslint = {}
@@ -158,9 +165,9 @@ mason_lspconfig.setup {
 mason_lspconfig.setup_handlers {
   ---@param server_name string
   function(server_name)
-    if server_name == 'eslint' and isFilePresentInCWD 'biome.json' then
+    if server_name == 'eslint' and areFilesPresentInCWD(BIOME_CONFIG) then
       return
-    elseif server_name == 'biome' and not isFilePresentInCWD 'biome.json' then
+    elseif server_name == 'biome' and not areFilesPresentInCWD(BIOME_CONFIG) then
       return
     end
 
@@ -173,7 +180,7 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
-if not isFilePresentInCWD 'biome.json' then
+if not areFilesPresentInCWD(BIOME_CONFIG) then
   require('lspconfig').eslint.setup {
     on_attach = function(client, bufnr)
       -- Disable hover and similar features for eslint-lsp
@@ -199,6 +206,18 @@ if not isFilePresentInCWD 'biome.json' then
       vim.api.nvim_create_autocmd('BufWritePre', {
         buffer = bufnr,
         command = 'EslintFixAll',
+      })
+    end,
+  }
+else
+  require('lspconfig').biome.setup {
+    on_attach = function(_, bufnr)
+      local workspace_path = vim.lsp.buf.list_workspace_folders()[1]
+      local file_path = vim.fn.expand('%:' .. workspace_path .. ':.')
+
+      vim.api.nvim_create_autocmd('BufWritePost', {
+        buffer = bufnr,
+        command = 'silent! !biome check --apply ' .. file_path,
       })
     end,
   }

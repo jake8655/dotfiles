@@ -1,28 +1,35 @@
 -- Utilities for creating configurations
 local util = require 'formatter.util'
 
----@param fileName string
-local function isFilePresentInCWD(fileName)
+---@param fileNames table<integer, string>
+local function areFilesPresentInCWD(fileNames)
   local cwDir = vim.fn.getcwd()
 
   -- Get all files and directories in CWD
   local cwdContent = vim.split(vim.fn.glob(cwDir .. '/*'), '\n', { trimempty = true })
 
   -- Check if specified file or directory exists
-  local fullNameToCheck = cwDir .. '/' .. fileName
+  local fullNamesToCheck = {}
+  for _, fileName in pairs(fileNames) do
+    table.insert(fullNamesToCheck, cwDir .. '/' .. fileName)
+  end
+
   for _, cwdItem in pairs(cwdContent) do
-    if cwdItem == fullNameToCheck then
-      return true
+    for _, fullNameToCheck in pairs(fullNamesToCheck) do
+      if cwdItem == fullNameToCheck then
+        return true
+      end
     end
   end
   return false
 end
 
 local WEB_LANGUAGES = { 'html', 'css', 'json', { 'jsonc', 'json' }, 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', { 'astro', 'defaults' } }
+local BIOME_CONFIG = { 'biome.json', 'biome.jsonc' }
 
 ---@param lang string
 local function prettierOrBiome(lang)
-  if isFilePresentInCWD 'biome.json' then
+  if areFilesPresentInCWD(BIOME_CONFIG) then
     if lang == 'defaults' then
       return require('formatter.' .. lang).biome
     else
