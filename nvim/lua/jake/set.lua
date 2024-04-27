@@ -53,3 +53,12 @@ vim.opt.signcolumn = 'yes'
 
 -- Sync MacOS clipboard with Neovim clipboard
 vim.opt.clipboard:append { 'unnamedplus' }
+
+-- Set filetype of justfiles
+vim.api.nvim_create_autocmd('BufReadPost', {
+  group = vim.api.nvim_create_augroup('SetJustfile', { clear = true }),
+  pattern = 'justfile',
+  callback = function()
+    vim.bo.filetype = 'just'
+  end,
+})
