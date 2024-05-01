@@ -180,36 +180,35 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
-if not areFilesPresentInCWD(BIOME_CONFIG) then
-  require('lspconfig').eslint.setup {
-    on_attach = function(client, bufnr)
-      -- Disable hover and similar features for eslint-lsp
-      client.server_capabilities.documentHighlight = false
-      client.server_capabilities.hoverProvider = false
-      client.server_capabilities.signatureHelp = false
-      client.server_capabilities.renameProvider = false
-      client.server_capabilities.completion = false
-      client.server_capabilities.codeAction = true
-      client.server_capabilities.documentFormattingProvider = false
-      client.server_capabilities.documentRangeFormatting = false
-      client.server_capabilities.documentSymbol = false
-      client.server_capabilities.workspaceSymbol = false
-      client.server_capabilities.codeLens = false
-      client.server_capabilities.declaration = false
-      client.server_capabilities.definition = false
-      client.server_capabilities.typeDefinition = false
-      client.server_capabilities.implementation = false
-      client.server_capabilities.references = false
-      client.server_capabilities.documentHighlight = false
-      -- require('lspconfig').on_attach(client, bufnr)
+require('lspconfig').eslint.setup {
+  on_attach = function(client, bufnr)
+    -- Disable hover and similar features for eslint-lsp
+    client.server_capabilities.documentHighlight = false
+    client.server_capabilities.hoverProvider = false
+    client.server_capabilities.signatureHelp = false
+    client.server_capabilities.renameProvider = false
+    client.server_capabilities.completion = false
+    client.server_capabilities.codeAction = true
+    client.server_capabilities.documentFormattingProvider = false
+    client.server_capabilities.documentRangeFormatting = false
+    client.server_capabilities.documentSymbol = false
+    client.server_capabilities.workspaceSymbol = false
+    client.server_capabilities.codeLens = false
+    client.server_capabilities.declaration = false
+    client.server_capabilities.definition = false
+    client.server_capabilities.typeDefinition = false
+    client.server_capabilities.implementation = false
+    client.server_capabilities.references = false
+    client.server_capabilities.documentHighlight = false
+    -- require('lspconfig').on_attach(client, bufnr)
 
-      vim.api.nvim_create_autocmd('BufWritePre', {
-        buffer = bufnr,
-        command = 'EslintFixAll',
-      })
-    end,
-  }
-else
+    vim.api.nvim_create_autocmd('BufWritePre', {
+      buffer = bufnr,
+      command = 'EslintFixAll',
+    })
+  end,
+}
+if areFilesPresentInCWD(BIOME_CONFIG) then
   require('lspconfig').biome.setup {
     on_attach = function(_, bufnr)
       local workspace_path = vim.lsp.buf.list_workspace_folders()[1]
