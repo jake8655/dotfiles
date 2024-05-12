@@ -11,6 +11,12 @@ vim.diagnostic.config {
   severity_sort = true,
   float = {
     border = 'rounded',
+    format = function(diagnostic)
+      if diagnostic.source == 'eslint' then
+        return string.format('%s (%s) [%s]', diagnostic.message, diagnostic.source, diagnostic.user_data.lsp.code)
+      end
+      return string.format('%s [%s]', diagnostic.message, diagnostic.source)
+    end,
   },
 }
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
@@ -68,28 +74,34 @@ end
 
 ---@param fileNames table<integer, string>
 local function areFilesPresentInCWD(fileNames)
-  local cwDir = vim.fn.getcwd()
-
-  -- Get all files and directories in CWD
-  local cwdContent = vim.split(vim.fn.glob(cwDir .. '/*'), '\n', { trimempty = true })
-
-  -- Check if specified file or directory exists
-  local fullNamesToCheck = {}
-  for _, fileName in pairs(fileNames) do
-    table.insert(fullNamesToCheck, cwDir .. '/' .. fileName)
-  end
-
-  for _, cwdItem in pairs(cwdContent) do
-    for _, fullNameToCheck in pairs(fullNamesToCheck) do
-      if cwdItem == fullNameToCheck then
-        return true
-      end
+  for _, file in ipairs(fileNames) do
+    if vim.fn.filereadable(file) == 1 then
+      return true
     end
   end
   return false
 end
 
 local BIOME_CONFIG = { 'biome.json', 'biome.jsonc' }
+local ESLINT_CONFIG = { '.eslintrc', '.eslintrc.json', '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.mjs' }
+
+local function isBiomeLinterEnabled()
+  for _, file in ipairs(BIOME_CONFIG) do
+    if vim.fn.filereadable(file) == 1 then
+      ---@type table<string>
+      local content = vim.fn.readfile(file)
+      ---@type table<string, unknown>
+      ---@diagnostic disable-next-line: assign-type-mismatch
+      local parsed = vim.fn.json_decode(content)
+
+      if parsed.linter and parsed.linter.enabled == true then
+        return true
+      end
+    end
+  end
+
+  return false
+end
 
 ---@param table1 table
 ---@param table2 table
@@ -105,9 +117,10 @@ local function spread(table1, table2)
 end
 
 local js_linter = {}
-if areFilesPresentInCWD(BIOME_CONFIG) then
+if isBiomeLinterEnabled() then
   js_linter.biome = {}
-else
+end
+if areFilesPresentInCWD(ESLINT_CONFIG) then
   js_linter.eslint = {}
 end
 
@@ -165,9 +178,10 @@ mason_lspconfig.setup {
 mason_lspconfig.setup_handlers {
   ---@param server_name string
   function(server_name)
-    if server_name == 'eslint' and areFilesPresentInCWD(BIOME_CONFIG) then
+    if server_name == 'eslint' and not areFilesPresentInCWD(ESLINT_CONFIG) then
       return
-    elseif server_name == 'biome' and not areFilesPresentInCWD(BIOME_CONFIG) then
+    end
+    if server_name == 'biome' and not isBiomeLinterEnabled() then
       return
     end
 
@@ -180,35 +194,38 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
-require('lspconfig').eslint.setup {
-  on_attach = function(client, bufnr)
-    -- Disable hover and similar features for eslint-lsp
-    client.server_capabilities.documentHighlight = false
-    client.server_capabilities.hoverProvider = false
-    client.server_capabilities.signatureHelp = false
-    client.server_capabilities.renameProvider = false
-    client.server_capabilities.completion = false
-    client.server_capabilities.codeAction = true
-    client.server_capabilities.documentFormattingProvider = false
-    client.server_capabilities.documentRangeFormatting = false
-    client.server_capabilities.documentSymbol = false
-    client.server_capabilities.workspaceSymbol = false
-    client.server_capabilities.codeLens = false
-    client.server_capabilities.declaration = false
-    client.server_capabilities.definition = false
-    client.server_capabilities.typeDefinition = false
-    client.server_capabilities.implementation = false
-    client.server_capabilities.references = false
-    client.server_capabilities.documentHighlight = false
-    -- require('lspconfig').on_attach(client, bufnr)
+if areFilesPresentInCWD(ESLINT_CONFIG) then
+  require('lspconfig').eslint.setup {
+    on_attach = function(client, bufnr)
+      -- Disable hover and similar features for eslint-lsp
+      client.server_capabilities.documentHighlight = false
+      client.server_capabilities.hoverProvider = false
+      client.server_capabilities.signatureHelp = false
+      client.server_capabilities.renameProvider = false
+      client.server_capabilities.completion = false
+      client.server_capabilities.codeAction = true
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormatting = false
+      client.server_capabilities.documentSymbol = false
+      client.server_capabilities.workspaceSymbol = false
+      client.server_capabilities.codeLens = false
+      client.server_capabilities.declaration = false
+      client.server_capabilities.definition = false
+      client.server_capabilities.typeDefinition = false
+      client.server_capabilities.implementation = false
+      client.server_capabilities.references = false
+      client.server_capabilities.documentHighlight = false
+      -- require('lspconfig').on_attach(client, bufnr)
 
-    vim.api.nvim_create_autocmd('BufWritePre', {
-      buffer = bufnr,
-      command = 'EslintFixAll',
-    })
-  end,
-}
-if areFilesPresentInCWD(BIOME_CONFIG) then
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        buffer = bufnr,
+        command = 'EslintFixAll',
+      })
+    end,
+  }
+end
+
+if isBiomeLinterEnabled() then
   require('lspconfig').biome.setup {
     on_attach = function(_, bufnr)
       local workspace_path = vim.lsp.buf.list_workspace_folders()[1]
@@ -216,7 +233,7 @@ if areFilesPresentInCWD(BIOME_CONFIG) then
 
       vim.api.nvim_create_autocmd('BufWritePost', {
         buffer = bufnr,
-        command = 'silent! !biome check --apply ' .. file_path,
+        command = 'silent! !biome check --apply-unsafe ' .. file_path .. ' & biome lint --apply-unsafe ' .. file_path,
       })
     end,
   }
