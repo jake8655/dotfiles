@@ -190,6 +190,9 @@ require('lazy').setup({
   -- Practice vim commands
   'ThePrimeagen/vim-be-good',
 
+  -- Hide env variables
+  'laytan/cloak.nvim',
+
   -- require 'kickstart.plugins.autoformat',
 }, {
   ui = { border = 'rounded' },
