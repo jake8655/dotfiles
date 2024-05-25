@@ -134,6 +134,9 @@ local servers = spread({
   pyright = {},
   tailwindcss = {},
   yamlls = {},
+  tsserver = {
+    update_in_insert = false,
+  },
 
   rust_analyzer = {
     ['rust-analyzer'] = {
