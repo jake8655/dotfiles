@@ -10,6 +10,7 @@ if not vim.loop.fs_stat(lazypath) then
     lazypath,
   }
 end
+---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 -- Setup plugins
@@ -69,7 +70,16 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
     end,
   },
-  { 'github/copilot.vim' },
+  {
+    'supermaven-inc/supermaven-nvim',
+    config = function()
+      require('supermaven-nvim').setup {
+        keymaps = {
+          accept_suggestion = '<C-l>',
+        },
+      }
+    end,
+  },
 
   -- Statusline
   {
@@ -89,7 +99,8 @@ require('lazy').setup({
   {
     'windwp/nvim-ts-autotag',
     config = function()
-      require('nvim-ts-autotag').setup()
+      ---@diagnostic disable-next-line: missing-fields
+      require('nvim-ts-autotag').setup {}
     end,
   },
 
