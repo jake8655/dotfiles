@@ -83,7 +83,8 @@ local function areFilesPresentInCWD(fileNames)
 end
 
 local BIOME_CONFIG = { 'biome.json', 'biome.jsonc' }
-local ESLINT_CONFIG = { '.eslintrc', '.eslintrc.json', '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.mjs' }
+local ESLINT_CONFIG =
+  { '.eslintrc', '.eslintrc.json', '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.mjs', 'eslint.config.js', 'eslint.config.cjs', 'eslint.config.mjs' }
 
 local function isBiomeLinterEnabled()
   for _, file in ipairs(BIOME_CONFIG) do
