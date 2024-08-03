@@ -12,6 +12,8 @@ alias vim="nvim"
 alias v="vim"
 alias diskusage="ncdu"
 alias tms="~/.dotfiles/scripts/tmux-sessionizer"
+alias lock="~/.dotfiles/scripts/lock"
+alias sleep="~/.dotfiles/scripts/sleep"
 # Connect to my bluetooth headphones
 alias hp="bluetoothctl connect C4:58:48:FD:28:84"
 alias dhp="bluetoothctl disconnect"

@@ -1,4 +1,7 @@
 #!/usr/bin/bash
+
+playerctl -a pause
+
 swaylockd \
 --screenshots \
 --indicator \
