@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-playerctl -a pause
+playerctl -a -s pause
 
 swaylockd \
 --screenshots \
