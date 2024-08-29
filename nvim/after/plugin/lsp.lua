@@ -284,3 +284,8 @@ vim.api.nvim_create_autocmd('BufRead', {
     cmp.setup.buffer { sources = { { name = 'crates' } } }
   end,
 })
+
+-- Support for hyprland config files
+vim.filetype.add {
+  pattern = { ['.*/hypr/.*%.conf'] = 'hyprlang' },
+}
