@@ -17,5 +17,20 @@
 [core]
 	editor = nvim
 [credential "https://gitlab.com"]
-	helper = 
+	helper =
 	helper = !/usr/bin/glab auth git-credential
+
+# Delta
+[include]
+    path = /home/jake/.dotfiles/themes.gitconfig
+[core]
+    pager = delta
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    features = arctic-fox
+    navigate = true    # use n and N to move between diff sections
+[merge]
+    conflictstyle = diff3
+[diff]
+    colorMoved = default
