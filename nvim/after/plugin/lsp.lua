@@ -135,7 +135,7 @@ local servers = spread({
   pyright = {},
   tailwindcss = {},
   yamlls = {},
-  tsserver = {
+  ts_ls = {
     update_in_insert = false,
   },
 
@@ -187,11 +187,6 @@ mason_lspconfig.setup_handlers {
     end
     if server_name == 'biome' and not isBiomeLinterEnabled() then
       return
-    end
-
-    -- https://github.com/neovim/nvim-lspconfig/pull/3232
-    if server_name == 'tsserver' then
-      server_name = 'ts_ls'
     end
 
     require('lspconfig')[server_name].setup {
