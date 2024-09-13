@@ -121,5 +121,8 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# ssh keychain
+eval $(keychain --eval --quiet id_ed25519)
+
 # Pfetch
 pfetch
