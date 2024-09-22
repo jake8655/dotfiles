@@ -118,6 +118,7 @@ require('lazy').setup({
     'startup-nvim/startup.nvim',
     dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
     config = function()
+      ---@diagnostic disable-next-line: missing-parameter
       require('startup').setup()
     end,
   },
@@ -209,13 +210,6 @@ require('lazy').setup({
     -- See `:help indent_blankline.txt`
     main = 'ibl',
     opts = {},
-  },
-
-  {
-    'iamcco/markdown-preview.nvim',
-    config = function()
-      vim.fn['mkdp#util#install']()
-    end,
   },
 
   -- Practice vim commands
