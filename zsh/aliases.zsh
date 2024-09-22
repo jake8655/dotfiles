@@ -13,7 +13,7 @@ alias v="vim"
 alias diskusage="ncdu"
 alias tms="~/.dotfiles/scripts/tmux-sessionizer"
 alias lock="~/.dotfiles/scripts/lock"
-alias sleep="~/.dotfiles/scripts/sleep"
+alias sleep-pc="~/.dotfiles/scripts/sleep-pc"
 alias zen="zen-browser"
 alias lg="lazygit"
 # Connect to my bluetooth headphones
