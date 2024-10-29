@@ -229,6 +229,27 @@ require('lazy').setup({
   -- Hide env variables
   'laytan/cloak.nvim',
 
+  -- Clipboard history
+  'royanirudd/clipboard-history.nvim',
+
+  -- File browser
+  {
+    'stevearc/oil.nvim',
+    ---@module 'oil'
+    ---@type oil.SetupOpts
+    opts = {
+      columns = {
+        'permissions',
+        'size',
+        'mtime',
+      },
+      watch_for_changes = true,
+      view_options = {
+        show_hidden = true,
+      },
+    },
+  },
+
   -- require 'kickstart.plugins.autoformat',
 }, {
   ui = { border = 'rounded' },
