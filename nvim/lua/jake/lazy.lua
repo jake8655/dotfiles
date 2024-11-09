@@ -232,38 +232,6 @@ require('lazy').setup({
   -- Clipboard history
   'royanirudd/clipboard-history.nvim',
 
-  -- File browser
-  {
-    'stevearc/oil.nvim',
-    ---@module 'oil'
-    ---@type oil.SetupOpts
-    opts = {
-      columns = {
-        'permissions',
-        'size',
-        'mtime',
-      },
-      win_options = {
-        signcolumn = 'yes',
-      },
-      watch_for_changes = true,
-      view_options = {
-        show_hidden = true,
-      },
-    },
-  },
-
-  -- Git status for oil.nvim
-  {
-    'refractalize/oil-git-status.nvim',
-    dependencies = {
-      'stevearc/oil.nvim',
-    },
-    config = function()
-      require('oil-git-status').setup { show_ignored = false }
-    end,
-  },
-
   -- require 'kickstart.plugins.autoformat',
 }, {
   ui = { border = 'rounded' },
