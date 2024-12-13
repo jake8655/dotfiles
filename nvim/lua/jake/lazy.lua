@@ -10,7 +10,6 @@ if not vim.loop.fs_stat(lazypath) then
     lazypath,
   }
 end
----@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 -- Setup plugins
@@ -110,8 +109,13 @@ require('lazy').setup({
   -- Change surrounding quotes...
   { 'tpope/vim-surround' },
 
-  -- Commenting shortcuts
-  { 'numToStr/Comment.nvim', opts = {}, branch = 'jsx' },
+  -- Comments
+  {
+    'folke/ts-comments.nvim',
+    opts = {},
+    event = 'VeryLazy',
+    enabled = vim.fn.has 'nvim-0.10.0' == 1,
+  },
 
   -- Startup screen
   {
@@ -232,7 +236,55 @@ require('lazy').setup({
   -- Clipboard history
   'royanirudd/clipboard-history.nvim',
 
+  -- Curosr.ai
+  {
+    'yetone/avante.nvim',
+    event = 'VeryLazy',
+    lazy = false,
+    version = false, -- set this if you want to always pull the latest change
+    opts = {
+      provider = 'copilot',
+    },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = 'make',
+    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+    dependencies = {
+      'stevearc/dressing.nvim',
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      --- The below dependencies are optional,
+      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+      'zbirenbaum/copilot.lua', -- for providers='copilot'
+      {
+        -- support for image pasting
+        'HakonHarnes/img-clip.nvim',
+        event = 'VeryLazy',
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            use_absolute_path = true,
+          },
+        },
+      },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          file_types = { 'markdown', 'Avante' },
+        },
+        ft = { 'markdown', 'Avante' },
+      },
+    },
+  },
+
   -- require 'kickstart.plugins.autoformat',
+  ---@diagnostic disable-next-line: missing-fields
 }, {
   ui = { border = 'rounded' },
 })
