@@ -196,7 +196,7 @@
   },
   "clock": {
     "timezone": "Europe/Bratislava",
-    "format": " {:%d <small>%a</small> %H:%M}",
+    "format": " {:%d-%m-%Y <small>%a</small> %H:%M}",
     //"format": " {:%a %b %d %Y | %H:%M}",
     "format-alt": " {:%A %B %d %Y (%V) | %r}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
