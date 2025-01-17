@@ -5,7 +5,19 @@ pcall(require('telescope').load_extension, 'fzf')
 
 require('telescope').setup {
   defaults = {
-    file_ignore_patterns = { 'node_modules/', '.git/', '.next/', 'target/', 'dist/', 'build/', '.cargo/', 'bun.lock', 'package-lock.json', 'yarn.lock' },
+    file_ignore_patterns = {
+      'node_modules/',
+      '.git/',
+      '.next/',
+      'target/',
+      'dist/',
+      'build/',
+      '.cargo/',
+      'bun.lock',
+      'package-lock.json',
+      'yarn.lock',
+      '.turbo/',
+    },
   },
 }
 
