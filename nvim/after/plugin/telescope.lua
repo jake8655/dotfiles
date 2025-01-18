@@ -17,6 +17,7 @@ require('telescope').setup {
       'package-lock.json',
       'yarn.lock',
       '.turbo/',
+      '.react-router/',
     },
   },
 }
