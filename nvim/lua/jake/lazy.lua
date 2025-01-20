@@ -283,6 +283,9 @@ require('lazy').setup({
   --   },
   -- },
 
+  -- Merge conflicts
+  { 'akinsho/git-conflict.nvim', version = '*', config = true },
+
   -- require 'kickstart.plugins.autoformat',
   ---@diagnostic disable-next-line: missing-fields
 }, {
