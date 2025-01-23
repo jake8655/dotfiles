@@ -124,6 +124,15 @@ require('formatter').setup {
       require('formatter.filetypes.toml').taplo,
     },
 
+    gdscript = {
+      function()
+        return {
+          exe = 'gdformat',
+          stdin = false,
+        }
+      end,
+    },
+
     -- Use the special "*" filetype for defining formatter configurations on
     -- any filetype
     ['*'] = {
