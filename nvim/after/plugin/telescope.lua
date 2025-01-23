@@ -18,6 +18,7 @@ require('telescope').setup {
       'yarn.lock',
       '.turbo/',
       '.react-router/',
+      '.godot/',
     },
   },
 }
