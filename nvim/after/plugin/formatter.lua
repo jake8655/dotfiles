@@ -95,31 +95,25 @@ require('formatter').setup {
       end,
     },
 
-    -- Python
     python = {
       require('formatter.filetypes.python').black,
     },
 
-    -- Rust
     rust = {
       require('formatter.filetypes.rust').rustfmt,
     },
 
-    -- Go
     go = {
       require('formatter.filetypes.go').gofumpt,
     },
 
-    -- C++
     cpp = {
       require('formatter.filetypes.cpp').clangformat,
     },
-    -- C
     c = {
       require('formatter.filetypes.c').clangformat,
     },
 
-    -- Toml
     toml = {
       require('formatter.filetypes.toml').taplo,
     },
@@ -131,6 +125,10 @@ require('formatter').setup {
           stdin = false,
         }
       end,
+    },
+
+    java = {
+      require('formatter.filetypes.java').google_java_format,
     },
 
     -- Use the special "*" filetype for defining formatter configurations on
