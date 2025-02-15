@@ -111,6 +111,9 @@ eval "$(fnm env --use-on-cd)"
 # Cargo
 export PATH="$HOME/.cargo/bin:$PATH"
 
+# Go
+export PATH="$HOME/go/bin:$PATH"
+
 # Syntax highlighting
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
