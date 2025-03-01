@@ -286,17 +286,6 @@ require('lazy').setup({
   -- Merge conflicts
   { 'akinsho/git-conflict.nvim', version = '*', config = true },
 
-  -- Image preview
-  {
-    'skardyy/neo-img',
-    build = 'cd ttyimg && go build', -- build ttyimg
-    config = function()
-      require('neo-img').setup {
-        auto_open = true,
-      }
-    end,
-  },
-
   -- AI agent
   {
     'olimorris/codecompanion.nvim',
