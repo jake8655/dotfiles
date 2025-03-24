@@ -19,6 +19,7 @@ require('telescope').setup {
       '.turbo/',
       '.react-router/',
       '.godot/',
+      '.expo/',
     },
   },
 }

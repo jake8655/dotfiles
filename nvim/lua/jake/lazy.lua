@@ -63,12 +63,14 @@ require('lazy').setup({
 
   -- Miscellaneous
   { 'ThePrimeagen/harpoon' },
+
   {
     'mbbill/undotree',
     config = function()
       vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
     end,
   },
+
   {
     'supermaven-inc/supermaven-nvim',
     config = function()
