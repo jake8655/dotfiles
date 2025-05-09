@@ -184,6 +184,7 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 -- Ensure the servers above are installed
 local mason_lspconfig = require 'mason-lspconfig'
 
+---@diagnostic disable-next-line: missing-fields
 mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
 }
@@ -207,6 +208,12 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
+---@diagnostic disable-next-line: missing-fields
+require('mason').setup {
+  ui = {
+    border = 'rounded',
+  },
+}
 if areFilesPresentInCWD(ESLINT_CONFIG) then
   require('lspconfig').eslint.setup {
     on_attach = function(client, bufnr)
