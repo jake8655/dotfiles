@@ -214,6 +214,39 @@ require('mason').setup {
     border = 'rounded',
   },
 }
+
+-- local mason_path = vim.fn.expand(vim.env.HOME .. '/.local/share/nvim/mason')
+-- local mason_packages_path = mason_path .. '/packages'
+--
+-- --- @param npm_name string
+-- --- @param server_name string
+-- local function install_custom_lsp(npm_name, server_name)
+--   local package_path = mason_packages_path .. '/' .. server_name
+--   local install_script_path = package_path .. '/install.sh' -- Script path
+--
+--   -- Create directories
+--   vim.fn.mkdir(package_path, 'p')
+--
+--   -- Create install script (install.sh)
+--   local install_script_content = [[
+--  #!/bin/bash
+--  set -e  # Exit immediately if a command exits with a non-zero status
+--
+--  # Replace with your actual installation commands
+--  echo "Installing beta version of ]] .. npm_name .. [["
+--  npm install -g ]] .. npm_name .. [[
+--  echo "Installation complete"
+--  ]]
+--
+--   -- Write the install script
+--   local file = io.open(install_script_path, 'w')
+--   file:write(install_script_content)
+--   file:close()
+--   vim.fn.system('chmod +x ' .. install_script_path) -- Make executable
+-- end
+--
+-- install_custom_lsp('@biomejs/biome@beta', 'biome')
+
 if areFilesPresentInCWD(ESLINT_CONFIG) then
   require('lspconfig').eslint.setup {
     on_attach = function(client, bufnr)
