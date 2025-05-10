@@ -138,8 +138,8 @@ require('lazy').setup({
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
-      { 'williamboman/mason.nvim', config = true },
-      'williamboman/mason-lspconfig.nvim',
+      { 'williamboman/mason.nvim', config = true, commit = 'fc98833b6da5de5a9c5b1446ac541577059555be' },
+      { 'williamboman/mason-lspconfig.nvim', commit = '1a31f824b9cd5bc6f342fc29e9a53b60d74af245' },
 
       -- Useful status updates for LSP
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
