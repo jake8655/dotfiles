@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mfontanini/presenterm/master/config-file-schema.json
+
+transition:
+  duration_millis: 750
+  frames: 45
+  animation:
+    style: slide_horizontal

@@ -1,0 +1,7 @@
+extends: dark
+
+footer:
+  style: template
+  left:
+    image: tux.png
+  right: "{current_slide} / {total_slides}"
