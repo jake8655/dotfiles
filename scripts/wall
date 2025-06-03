@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-swww query || swww init
+swww query || swww-daemon
 
 if [ -n "$1" ]; then
   if [[ $* == *--backwards* ]]; then
