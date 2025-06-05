@@ -1,11 +1,7 @@
 local crates = require 'crates'
 local opts = { silent = true }
 
-crates.setup {
-  null_ls = {
-    enabled = true,
-  },
-}
+crates.setup {}
 
 vim.keymap.set('n', '<leader>ct', crates.toggle, opts)
 vim.keymap.set('n', '<leader>cr', crates.reload, opts)

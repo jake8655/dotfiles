@@ -1,9 +1,12 @@
 local builtin = require 'telescope.builtin'
 
--- Enable telescope fzf native, if installed
-pcall(require('telescope').load_extension, 'fzf')
-
 require('telescope').setup {
+  extensions = {
+    ['ui-select'] = {
+      require('telescope.themes').get_dropdown(),
+    },
+  },
+
   defaults = {
     file_ignore_patterns = {
       'node_modules/',
@@ -24,6 +27,10 @@ require('telescope').setup {
     },
   },
 }
+
+-- Enable telescope fzf native, if installed
+pcall(require('telescope').load_extension, 'fzf')
+pcall(require('telescope').load_extension, 'ui-select')
 
 vim.keymap.set('n', '<leader>f', function()
   builtin.find_files {

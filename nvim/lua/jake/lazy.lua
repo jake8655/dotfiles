@@ -1,21 +1,24 @@
--- Initialize lazy.nvim
+-- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
-    'git',
-    'clone',
-    '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
-    lazypath,
-  }
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
+  local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { 'Failed to clone lazy.nvim:\n', 'ErrorMsg' },
+      { out, 'WarningMsg' },
+      { '\nPress any key to exit...' },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
 end
 vim.opt.rtp:prepend(lazypath)
 
 -- Setup plugins
 require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
+  'NMAC427/guess-indent.nvim',
 
   {
     -- Highlight, edit, and navigate code
@@ -24,14 +27,16 @@ require('lazy').setup({
       'nvim-treesitter/nvim-treesitter-textobjects',
     },
     build = ':TSUpdate',
+    main = 'nvim-treesitter.configs',
   },
 
   {
     -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
+    event = 'VimEnter',
     dependencies = {
       'nvim-lua/plenary.nvim',
+
       -- Fuzzy Finder Algorithm which requires local dependencies to be built.
       -- Only load if `make` is available. Make sure you have the system
       -- requirements installed.
@@ -44,6 +49,8 @@ require('lazy').setup({
           return vim.fn.executable 'make' == 1
         end,
       },
+
+      { 'nvim-telescope/telescope-ui-select.nvim' },
     },
   },
 
@@ -88,7 +95,7 @@ require('lazy').setup({
   },
   { 'arkav/lualine-lsp-progress' },
 
-  -- Autotype paranthesis pairs
+  -- Autotype parenthesis pairs
   {
     'windwp/nvim-autopairs',
     config = function()
@@ -133,54 +140,253 @@ require('lazy').setup({
   -- Would be cool but doesnt work fsr (termguicolors must be set)
   -- { "norcalli/nvim-colorizer.lua" },
 
+  -- LSP Plugins
   {
-    -- LSP
+    -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+    -- used for completion, annotations and signatures of Neovim apis
+    'folke/lazydev.nvim',
+    ft = 'lua',
+    opts = {
+      library = {
+        -- Load luvit types when the `vim.uv` word is found
+        { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+      },
+    },
+  },
+  {
     'neovim/nvim-lspconfig',
     dependencies = {
-      -- Automatically install LSPs to stdpath for neovim
-      { 'williamboman/mason.nvim', config = true, commit = 'fc98833b6da5de5a9c5b1446ac541577059555be' },
-      { 'williamboman/mason-lspconfig.nvim', commit = '1a31f824b9cd5bc6f342fc29e9a53b60d74af245' },
+      -- Automatically install LSPs and related tools to stdpath for Neovim
+      -- Mason must be loaded before its dependents so we need to set it up here.
+      -- NOTE: `opts = {}` is the same as calling `require('mason').setup({})`
+      { 'mason-org/mason.nvim', opts = {} },
+      'mason-org/mason-lspconfig.nvim',
+      'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Useful status updates for LSP
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+      { 'j-hui/fidget.nvim', opts = {} },
 
-      -- Additional lua configuration, makes nvim stuff amazing!
-      'folke/neodev.nvim',
+      -- Allows extra capabilities provided by blink.cmp
+      'saghen/blink.cmp',
 
       -- Crates.io utilities
       {
-        'nvimtools/none-ls.nvim',
-        config = function()
-          require('null-ls').setup {}
-        end,
-      },
-      {
         'saecki/crates.nvim',
+        event = { 'BufRead Cargo.toml' },
         tag = 'stable',
-        dependencies = {
-          'nvimtools/none-ls.nvim',
-        },
+        opts = {},
       },
-
-      -- Code formatter
-      'mhartington/formatter.nvim',
     },
   },
 
-  {
-    -- Autocompletion
-    'hrsh7th/nvim-cmp',
+  { -- Autoformat
+    'stevearc/conform.nvim',
+    event = { 'BufWritePre' },
+    cmd = { 'ConformInfo' },
+    keys = {
+      {
+        '<leader>h',
+        function()
+          require('conform').format { async = true, lsp_format = 'fallback' }
+        end,
+        mode = '',
+        desc = '[F]ormat buffer',
+      },
+    },
+    opts = {
+      notify_on_error = false,
+      format_on_save = function(bufnr)
+        -- Disable "format_on_save lsp_fallback" for languages that don't
+        -- have a well standardized coding style. You can add additional
+        -- languages here or re-enable it for the disabled ones.
+        local disable_filetypes = { c = true, cpp = true }
+        if disable_filetypes[vim.bo[bufnr].filetype] then
+          return nil
+        else
+          return {
+            timeout_ms = 500,
+            lsp_format = 'fallback',
+          }
+        end
+      end,
+      formatters_by_ft = {
+        lua = { 'stylua' },
+        python = { 'black' },
+        rust = { 'rustfmt' },
+        go = { 'gofumpt' },
+        cpp = { 'clang-format' },
+        c = { 'clang-format' },
+        toml = { 'taplo' },
+        gdscript = { 'gdformat' },
+        java = { 'google-java-format' },
+        html = { 'biome', 'biome-check', 'biome-organize-imports' },
+        css = { 'biome', 'biome-check', 'biome-organize-imports' },
+        json = { 'biome', 'biome-check', 'biome-organize-imports' },
+        javascript = { 'biome', 'biome-check', 'biome-organize-imports' },
+        javascriptreact = { 'biome', 'biome-check', 'biome-organize-imports' },
+        typescript = { 'biome', 'biome-check', 'biome-organize-imports' },
+        typescriptreact = { 'biome', 'biome-check', 'biome-organize-imports' },
+        astro = { 'biome', 'biome-check', 'biome-organize-imports' },
+        ['*'] = { 'codespell' },
+        ['_'] = { 'trim_whitespace' },
+        -- Conform can also run multiple formatters sequentially
+        -- python = { "isort", "black" },
+        --
+        -- You can use 'stop_after_first' to run the first available formatter from the list
+        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+      },
+    },
+  },
+
+  { -- Linting
+    'mfussenegger/nvim-lint',
+    event = { 'BufReadPre', 'BufNewFile' },
+    config = function()
+      local lint = require 'lint'
+      lint.linters_by_ft = {
+        markdown = { 'markdownlint' },
+        json = { 'jsonlint' },
+      }
+
+      -- To allow other plugins to add linters to require('lint').linters_by_ft,
+      -- instead set linters_by_ft like this:
+      -- lint.linters_by_ft = lint.linters_by_ft or {}
+      -- lint.linters_by_ft['markdown'] = { 'markdownlint' }
+      --
+      -- However, note that this will enable a set of default linters,
+      -- which will cause errors unless these tools are available:
+      -- {
+      --   clojure = { "clj-kondo" },
+      --   dockerfile = { "hadolint" },
+      --   inko = { "inko" },
+      --   janet = { "janet" },
+      --   json = { "jsonlint" },
+      --   markdown = { "vale" },
+      --   rst = { "vale" },
+      --   ruby = { "ruby" },
+      --   terraform = { "tflint" },
+      --   text = { "vale" }
+      -- }
+      --
+      -- You can disable the default linters by setting their filetypes to nil:
+      -- lint.linters_by_ft['clojure'] = nil
+      -- lint.linters_by_ft['dockerfile'] = nil
+      -- lint.linters_by_ft['inko'] = nil
+      -- lint.linters_by_ft['janet'] = nil
+      -- lint.linters_by_ft['json'] = nil
+      -- lint.linters_by_ft['markdown'] = nil
+      -- lint.linters_by_ft['rst'] = nil
+      -- lint.linters_by_ft['ruby'] = nil
+      -- lint.linters_by_ft['terraform'] = nil
+      -- lint.linters_by_ft['text'] = nil
+
+      -- Create autocommand which carries out the actual linting
+      -- on the specified events.
+      local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
+      vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
+        group = lint_augroup,
+        callback = function()
+          -- Only run the linter in buffers that you can modify in order to
+          -- avoid superfluous noise, notably within the handy LSP pop-ups that
+          -- describe the hovered symbol using Markdown.
+          if vim.bo.modifiable then
+            lint.try_lint()
+          end
+        end,
+      })
+    end,
+  },
+
+  { -- Autocompletion
+    'saghen/blink.cmp',
+    event = 'VimEnter',
+    version = '1.*',
     dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
+      -- Snippet Engine
+      {
+        'L3MON4D3/LuaSnip',
+        version = '2.*',
+        build = (function()
+          -- Build Step is needed for regex support in snippets.
+          -- This step is not supported in many windows environments.
+          -- Remove the below condition to re-enable on windows.
+          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+            return
+          end
+          return 'make install_jsregexp'
+        end)(),
+        dependencies = {
+          -- `friendly-snippets` contains a variety of premade snippets.
+          --    See the README about individual language/framework/plugin snippets:
+          --    https://github.com/rafamadriz/friendly-snippets
+          -- {
+          --   'rafamadriz/friendly-snippets',
+          --   config = function()
+          --     require('luasnip.loaders.from_vscode').lazy_load()
+          --   end,
+          -- },
+        },
+        opts = {},
+      },
+      'folke/lazydev.nvim',
+    },
+    --- @module 'blink.cmp'
+    --- @type blink.cmp.Config
+    opts = {
+      keymap = {
+        -- 'default' (recommended) for mappings similar to built-in completions
+        --   <c-y> to accept ([y]es) the completion.
+        --    This will auto-import if your LSP supports it.
+        --    This will expand snippets if the LSP sent a snippet.
+        -- 'super-tab' for tab to accept
+        -- 'enter' for enter to accept
+        -- 'none' for no mappings
+        --
+        -- For an understanding of why the 'default' preset is recommended,
+        -- you will need to read `:help ins-completion`
+        --
+        -- No, but seriously. Please read `:help ins-completion`, it is really good!
+        --
+        -- All presets have the following mappings:
+        -- <tab>/<s-tab>: move to right/left of your snippet expansion
+        -- <c-space>: Open menu or open docs if already open
+        -- <c-n>/<c-p> or <up>/<down>: Select next/previous item
+        -- <c-e>: Hide menu
+        -- <c-k>: Toggle signature help
+        --
+        -- See :h blink-cmp-config-keymap for defining your own keymap
+        preset = 'enter',
 
-      -- Adds LSP completion capabilities
-      'hrsh7th/cmp-nvim-lsp',
+        -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
+        --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
+      },
 
-      -- Adds a number of user-friendly snippets
-      'rafamadriz/friendly-snippets',
+      completion = {
+        -- By default, you may press `<c-space>` to show the documentation.
+        -- Optionally, set `auto_show = true` to show the documentation after a delay.
+        documentation = { auto_show = true, auto_show_delay_ms = 500 },
+      },
+
+      sources = {
+        default = { 'lsp', 'path', 'snippets', 'lazydev' },
+        providers = {
+          lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+        },
+      },
+
+      snippets = { preset = 'luasnip' },
+
+      -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
+      -- which automatically downloads a prebuilt binary when enabled.
+      --
+      -- By default, we use the Lua implementation instead, but you may enable
+      -- the rust implementation via `'prefer_rust_with_warning'`
+      --
+      -- See :h blink-cmp-config-fuzzy for more information
+      fuzzy = { implementation = 'lua' },
+
+      -- Shows a signature help window while you type arguments for a function
+      signature = { enabled = true },
     },
   },
 
@@ -228,6 +434,9 @@ require('lazy').setup({
     end,
     ft = { 'markdown' },
   },
+
+  -- Highlight todo, notes, etc in comments
+  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   -- Practice vim commands
   'ThePrimeagen/vim-be-good',

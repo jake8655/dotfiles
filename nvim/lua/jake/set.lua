@@ -1,58 +1,64 @@
 -- General configset
-vim.opt.guicursor = ''
-vim.opt.mouse = ''
+vim.o.guicursor = ''
+vim.o.mouse = ''
 
-vim.opt.exrc = true
-vim.opt.hlsearch = false
-vim.opt.hidden = true
-vim.opt.errorbells = false
+vim.o.exrc = true
+vim.o.hlsearch = false
+vim.o.hidden = true
+vim.o.errorbells = false
 
 -- Line Numbers
-vim.opt.rnu = true
-vim.opt.nu = true
+vim.o.rnu = true
+vim.o.nu = true
 
 -- Tabs and indenting
-vim.opt.expandtab = true
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.smartindent = true
-vim.opt.wrap = false
+vim.o.expandtab = true
+vim.o.tabstop = 2
+vim.o.softtabstop = 2
+vim.o.shiftwidth = 2
+vim.o.smartindent = true
+vim.o.wrap = false
 
 -- Searching
-vim.opt.smartcase = true
-vim.opt.ignorecase = true
-vim.opt.incsearch = true
+vim.o.smartcase = true
+vim.o.ignorecase = true
+vim.o.incsearch = true
 
 -- File stuff
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.undodir = os.getenv 'HOME' .. '/.vim/undodir'
-vim.opt.undofile = true
+vim.o.swapfile = false
+vim.o.backup = false
+vim.o.undodir = os.getenv 'HOME' .. '/.vim/undodir'
+vim.o.undofile = true
 
 -- Colors
-vim.opt.termguicolors = true
+vim.o.termguicolors = true
 
 -- Scrolling
-vim.opt.scrolloff = 8
+vim.o.scrolloff = 8
 
 -- Modes
-vim.opt.showmode = false
+vim.o.showmode = false
 
 -- Autocomplete
-vim.opt.completeopt = 'menuone,noinsert,noselect'
+vim.o.completeopt = 'menuone,noinsert,noselect'
+
+-- TODO: Re-enable when https://github.com/nvim-lua/plenary.nvim/pull/649 is merged
+-- Rounded borders for all floating windows
+-- vim.o.winborder = 'rounded'
 
 -- Random
-vim.opt.updatetime = 50
+vim.o.updatetime = 50
 vim.o.timeoutlen = 500
 vim.opt.shortmess:append 'c'
 vim.opt.isfname:append '@-@'
 
 -- Space for LSP messages
-vim.opt.signcolumn = 'yes'
+vim.o.signcolumn = 'yes'
 
 -- Sync MacOS clipboard with Neovim clipboard
-vim.opt.clipboard:append { 'unnamedplus' }
+vim.schedule(function()
+  vim.o.clipboard = 'unnamedplus'
+end)
 
 -- Set filetype of justfiles
 vim.api.nvim_create_autocmd('BufReadPost', {
@@ -62,3 +68,7 @@ vim.api.nvim_create_autocmd('BufReadPost', {
     vim.bo.filetype = 'just'
   end,
 })
+
+-- Highlight current line
+vim.o.cursorline = true
+vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = '#EE8F6A', bold = true })
