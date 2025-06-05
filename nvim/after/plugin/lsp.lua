@@ -11,11 +11,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
       vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
     end
 
-    -- TODO: Remove when https://github.com/nvim-lua/plenary.nvim/pull/649 is merged
-    map('K', function()
-      vim.lsp.buf.hover { border = 'rounded' }
-    end, 'Hover')
-
     map('gl', vim.diagnostic.open_float, 'Open floating diagnostic message')
 
     -- Rename the variable under your cursor.

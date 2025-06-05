@@ -42,9 +42,7 @@ vim.o.showmode = false
 -- Autocomplete
 vim.o.completeopt = 'menuone,noinsert,noselect'
 
--- TODO: Re-enable when https://github.com/nvim-lua/plenary.nvim/pull/649 is merged
--- Rounded borders for all floating windows
--- vim.o.winborder = 'rounded'
+vim.o.winborder = 'rounded'
 
 -- Random
 vim.o.updatetime = 50
