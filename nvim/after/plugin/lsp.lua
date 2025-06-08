@@ -194,6 +194,8 @@ require('mason-lspconfig').setup {
   },
 }
 
+vim.lsp.enable 'qmlls'
+
 ---@diagnostic disable-next-line: missing-fields
 require('mason').setup {
   ui = {
