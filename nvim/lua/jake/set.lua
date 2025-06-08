@@ -69,4 +69,5 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 
 -- Highlight current line
 vim.o.cursorline = true
-vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = '#EE8F6A', bold = true })
+vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = '#ee8f6a', bold = true })
+vim.api.nvim_set_hl(0, 'LineNr', { fg = '#7d9dd4' })
