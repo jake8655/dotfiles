@@ -194,8 +194,6 @@ require('mason-lspconfig').setup {
   },
 }
 
-vim.lsp.enable 'qmlls'
-
 ---@diagnostic disable-next-line: missing-fields
 require('mason').setup {
   ui = {
@@ -239,8 +237,6 @@ local function install_custom_lsp(npm_name, server_name)
   vim.fn.system './install.sh'
   print 'Installation complete'
 end
-
-install_custom_lsp('@biomejs/biome@beta', 'biome')
 
 vim.keymap.set('n', '<leader>m', vim.cmd.Mason)
 
