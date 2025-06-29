@@ -79,13 +79,13 @@ require('lazy').setup({
   },
 
   {
-    'supermaven-inc/supermaven-nvim',
+    'github/copilot.vim',
     config = function()
-      require('supermaven-nvim').setup {
-        keymaps = {
-          accept_suggestion = '<C-l>',
-        },
-      }
+      vim.keymap.set('i', '<C-l>', 'copilot#Accept("\\<CR>")', {
+        expr = true,
+        replace_keycodes = false,
+      })
+      vim.g.copilot_no_tab_map = true
     end,
   },
 
