@@ -1,3 +1,5 @@
+local utils = require 'jake.utils'
+
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
   callback = function(event)
@@ -59,6 +61,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
       if vim.fn.has 'nvim-0.11' == 1 then
         return client:supports_method(method, bufnr)
       else
+        ---@diagnostic disable-next-line: param-type-mismatch
         return client.supports_method(method, { bufnr = bufnr })
       end
     end
@@ -184,6 +187,14 @@ require('mason-lspconfig').setup {
   automatic_enable = true,
   handlers = {
     function(server_name)
+      if server_name == 'biome' and utils.areFilesPresentInCWD(utils.ESLINT_CONFIG) then
+        return
+      end
+
+      if server_name == 'eslint' and not utils.areFilesPresentInCWD(utils.ESLINT_CONFIG) then
+        return
+      end
+
       local server = servers[server_name] or {}
       -- This handles overriding only values explicitly passed
       -- by the server configuration above. Useful when disabling
@@ -230,6 +241,10 @@ local function install_custom_lsp(npm_name, server_name)
 
   -- Write the install script
   local file = io.open(install_script_path, 'w')
+  if not file then
+    print('Failed to create install script for ' .. npm_name)
+    return
+  end
   file:write(install_script_content)
   file:close()
   vim.fn.system('chmod +x ' .. install_script_path) -- Make executable
