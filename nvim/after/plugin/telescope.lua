@@ -24,6 +24,8 @@ require('telescope').setup {
       '.godot/',
       'assets/',
       '.expo/',
+      '.wrangler/',
+      '.open-next/',
     },
   },
 }
