@@ -432,6 +432,21 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'youyoumu/pretty-ts-errors.nvim',
+    config = function()
+      require('pretty-ts-errors').setup {
+        float_opts = {
+          wrap = true,
+        },
+        auto_open = false,
+      }
+      vim.keymap.set('n', '<leader>jk', function()
+        require('pretty-ts-errors').show_formatted_error()
+      end, { desc = 'Show TS error' })
+    end,
+  },
+
   -- require 'kickstart.plugins.autoformat',
   ---@diagnostic disable-next-line: missing-fields
 }, {
