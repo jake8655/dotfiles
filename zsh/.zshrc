@@ -129,7 +129,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 eval $(keychain --eval --quiet id_ed25519)
 
 # Thefuck
-eval $(thefuck --alias f)
+eval $(thefuck --alias)
 
 # Pfetch
 pfetch
