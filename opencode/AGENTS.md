@@ -7,6 +7,7 @@
 - Classes/Types: PascalCase
 - Constants: UPPER_SNAKE_CASE
 - Private properties: _prefixWithUnderscore
+- File names: kebab-case
 
 ## Formatting
 
@@ -36,3 +37,5 @@ or library/API documentation, use the context7 tool
 - When programming in React, DO NOT use `memo`, `useMemo`, or `useCallback` because they are not needed with React Compiler
 - You DO NOT need to worry about function recreation on every render in useEffect dependency arrays because React Compiler handles this automatically
 - AVOID using index as a key in React lists
+- ALWAYS use `bun` and `bunx` instead of `npm` or `yarn`
+- PREFER default exports for single exports or main components in react files
