@@ -28,7 +28,7 @@ local formatters_by_ft = {
   typescript = { 'biome', 'biome-check' },
   typescriptreact = { 'biome', 'biome-check' },
   astro = { 'biome', 'biome-check' },
-  ['*'] = { 'codespell' },
+  -- ['*'] = { 'codespell' },
   ['_'] = { 'trim_whitespace' },
   -- Conform can also run multiple formatters sequentially
   -- python = { "isort", "black" },
