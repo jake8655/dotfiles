@@ -11,5 +11,6 @@
   "chromiumSwitches": {},
   "BACKGROUND_COLOR": "#000000",
   "offloadAdmControls": false,
-  "SKIP_HOST_UPDATE": true
+  "SKIP_HOST_UPDATE": true,
+  "enableHardwareAcceleration": true
 }
