@@ -10,7 +10,7 @@
   "OPEN_ON_STARTUP": false,
   "chromiumSwitches": {},
   "BACKGROUND_COLOR": "#000000",
-  "offloadAdmControls": false,
+  "offloadAdmControls": true,
   "SKIP_HOST_UPDATE": true,
   "enableHardwareAcceleration": true
 }
