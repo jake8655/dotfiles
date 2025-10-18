@@ -11,7 +11,7 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
 
 local formatters_by_ft = {
   lua = { 'stylua' },
-  python = { 'black' },
+  python = { 'ruff_fix', 'ruff_format', 'ruff_organize_imports' },
   rust = { 'rustfmt' },
   go = { 'gofumpt' },
   cpp = { 'clang-format' },
