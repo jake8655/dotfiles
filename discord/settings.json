@@ -12,5 +12,6 @@
   "BACKGROUND_COLOR": "#000000",
   "offloadAdmControls": true,
   "SKIP_HOST_UPDATE": true,
-  "enableHardwareAcceleration": true
+  "enableHardwareAcceleration": true,
+  "asyncVideoInputDeviceInit": false
 }
