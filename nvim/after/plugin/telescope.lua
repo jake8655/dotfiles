@@ -26,6 +26,8 @@ require('telescope').setup {
       '.expo/',
       '.wrangler/',
       '.open-next/',
+      '.venv/',
+      '.ruff_cache/',
     },
   },
 }
