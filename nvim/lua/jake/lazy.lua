@@ -410,28 +410,6 @@ require('lazy').setup({
   -- Merge conflicts
   { 'akinsho/git-conflict.nvim', version = '*', config = true },
 
-  -- AI agent
-  {
-    'olimorris/codecompanion.nvim',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'nvim-treesitter/nvim-treesitter',
-    },
-    config = function()
-      require('codecompanion').setup {
-        strategies = {
-          chat = {
-            keymaps = {
-              close = {
-                modes = { n = '<C-t>', i = '<C-t>' },
-              },
-            },
-          },
-        },
-      }
-    end,
-  },
-
   {
     'youyoumu/pretty-ts-errors.nvim',
     config = function()
