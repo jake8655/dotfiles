@@ -1,0 +1,39 @@
+{
+	"promptsDirectory": "~/.config/btca/prompts",
+	"reposDirectory": "~/.btca/repos",
+	"port": 3420,
+	"maxInstances": 5,
+	"repos": [
+		{
+			"name": "react",
+			"url": "https://github.com/reactjs/react.dev",
+			"branch": "main",
+			"specialNotes": "This is the react docs website repo, not the actual react repo. Use the docs to answer questions about react."
+		},
+		{
+			"name": "tailwindcss",
+			"url": "https://github.com/tailwindlabs/tailwindcss.com",
+			"branch": "main",
+			"specialNotes": "This is the tailwindcss docs website repo, not the actual tailwindcss repo. Use the docs to answer questions about tailwindcss."
+		},
+		{
+			"name": "nextjs",
+			"url": "https://github.com/vercel/next.js",
+			"branch": "canary"
+		},
+		{
+			"name": "fivem",
+			"url": "https://github.com/citizenfx/fivem-docs",
+			"branch": "master",
+			"specialNotes": "This is the fivem docs website repo, not the actual fivem repo. Use the docs to answer questions about fivem."
+		},
+		{
+			"name": "fivem-natives",
+			"url": "https://github.com/citizenfx/natives",
+			"branch": "master",
+			"specialNotes": "This is the fivem-natives docs repo, not the actual fivem-natives repo. Use the docs to answer questions about fivem-natives."
+		}
+	],
+	"model": "claude-haiku-4.5",
+	"provider": "github-copilot"
+}
