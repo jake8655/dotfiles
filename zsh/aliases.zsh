@@ -17,7 +17,7 @@ alias sleep-pc="~/.dotfiles/scripts/sleep-pc"
 alias zen="zen-browser"
 alias lg="lazygit"
 # Connect to my bluetooth headphones
-alias hp="bluetoothctl connect C4:58:48:FD:28:84"
+alias hp="bluetoothctl connect 14:C8:8B:D1:82:86"
 alias dhp="bluetoothctl disconnect"
 # Connect to my bluetooth mouse
 alias bm="bluetoothctl connect 94:F6:D6:B6:6B:42"
