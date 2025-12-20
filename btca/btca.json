@@ -28,10 +28,16 @@
 			"specialNotes": "This is the fivem docs website repo, not the actual fivem repo. Use the docs to answer questions about fivem."
 		},
 		{
-			"name": "fivem-natives",
+			"name": "gta-natives",
 			"url": "https://github.com/citizenfx/natives",
 			"branch": "master",
-			"specialNotes": "This is the fivem-natives docs repo, not the actual fivem-natives repo. Use the docs to answer questions about fivem-natives."
+			"specialNotes": "This is the gta-natives docs repo, not the actual gta-natives repo. Use the docs to answer questions about gta-natives."
+		},
+		{
+			"name": "esx-legacy",
+			"url": "https://github.com/esx-framework/esx-legacy-documentation",
+			"branch": "main",
+			"specialNotes": "This is the esx-legacy docs website repo, not the actual esx-legacy repo. Use the docs to answer questions about esx-legacy."
 		}
 	],
 	"model": "claude-haiku-4.5",
