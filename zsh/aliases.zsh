@@ -25,6 +25,7 @@ alias dbm="bluetoothctl disconnect"
 alias wallp="wallpaper-cava --config /home/jake/.dotfiles/cava/config.toml"
 alias gdvim="nvim --listen ~/.cache/nvim/godot.pipe"
 alias glg="g lg"
+alias oc="opencode"
 
 # Browse projects
 function pj() {
