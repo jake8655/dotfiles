@@ -5,13 +5,13 @@
 		"bash": "ask"
 	},
 	"mcp": {
-		"github": {
-			"type": "remote",
-			"url": "https://api.githubcopilot.com/mcp",
-			"headers": {
-				"Authorization": "Bearer {env:GITHUB_TOKEN}"
-			}
-		},
+		// "github": {
+		// 	"type": "remote",
+		// 	"url": "https://api.githubcopilot.com/mcp",
+		// 	"headers": {
+		// 		"Authorization": "Bearer {env:GITHUB_TOKEN}"
+		// 	}
+		// },
 		"shadcn": {
 			"type": "local",
 			"command": ["bunx", "shadcn@latest", "mcp"]
