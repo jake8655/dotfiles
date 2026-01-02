@@ -38,6 +38,12 @@
 			"url": "https://github.com/esx-framework/esx-legacy-documentation",
 			"branch": "main",
 			"specialNotes": "This is the esx-legacy docs website repo, not the actual esx-legacy repo. Use the docs to answer questions about esx-legacy."
+		},
+		{
+			"name": "better-auth",
+			"url": "https://github.com/better-auth/better-auth",
+			"branch": "main",
+			"specialNotes": "This is the full better-auth monorepo. The repo contains the source code as well as the docs located in the /docs folder. Use the docs as well as the source code to answer questions about better-auth."
 		}
 	],
 	"model": "claude-haiku-4.5",
