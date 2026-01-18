@@ -4,10 +4,6 @@ vim.g.maplocalleader = ' '
 vim.keymap.set('n', '<leader>e', vim.cmd.Ex)
 vim.keymap.set('n', '<leader>w', vim.cmd.w)
 vim.keymap.set('n', '<leader>q', vim.cmd.q)
-vim.keymap.set('n', '<leader><leader>', function()
-  vim.cmd.so()
-  print('sourced:', vim.fn.expand '%')
-end)
 vim.keymap.set('n', '<leader>lz', vim.cmd.Lazy)
 
 vim.keymap.set('n', '<C-d>', '<C-d>zz')

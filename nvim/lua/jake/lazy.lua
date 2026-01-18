@@ -126,16 +126,6 @@ require('lazy').setup({
     'numToStr/Comment.nvim',
   },
 
-  -- Startup screen
-  {
-    'startup-nvim/startup.nvim',
-    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
-    config = function()
-      ---@diagnostic disable-next-line: missing-parameter
-      require('startup').setup()
-    end,
-  },
-
   -- Colorful background of color words
   {
     'catgoose/nvim-colorizer.lua',
@@ -208,11 +198,6 @@ require('lazy').setup({
         desc = '[F]ormat buffer',
       },
     },
-  },
-
-  { -- Linting
-    'mfussenegger/nvim-lint',
-    event = { 'BufReadPre', 'BufNewFile' },
   },
 
   { -- Autocompletion
@@ -366,9 +351,6 @@ require('lazy').setup({
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
-  -- Practice vim commands
-  'ThePrimeagen/vim-be-good',
-
   -- Hide env variables
   'laytan/cloak.nvim',
 
@@ -426,113 +408,9 @@ require('lazy').setup({
   { 'akinsho/git-conflict.nvim', version = '*', config = true },
 
   {
-    'youyoumu/pretty-ts-errors.nvim',
-    config = function()
-      require('pretty-ts-errors').setup {
-        float_opts = {
-          wrap = true,
-        },
-        auto_open = false,
-      }
-      vim.keymap.set('n', '<leader>jk', function()
-        require('pretty-ts-errors').show_formatted_error()
-      end, { desc = 'Show TS error' })
-    end,
-  },
-
-  {
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
     opts = {},
-  },
-
-  {
-    'NickvanDyke/opencode.nvim',
-    dependencies = {
-      -- Recommended for better prompt input, and required to use opencode.nvim's embedded terminal. Otherwise optional.
-      { 'folke/snacks.nvim', opts = { input = { enabled = true } } },
-    },
-    ---@type opencode.Opts
-    opts = {
-      -- Your configuration, if any
-    },
-    keys = {
-      -- Recommended keymaps
-      {
-        '<leader>oA',
-        function()
-          require('opencode').ask()
-        end,
-        desc = 'Ask opencode',
-      },
-      {
-        '<leader>oa',
-        function()
-          require('opencode').ask '@cursor: '
-        end,
-        desc = 'Ask opencode about this',
-        mode = 'n',
-      },
-      {
-        '<leader>oa',
-        function()
-          require('opencode').ask '@selection: '
-        end,
-        desc = 'Ask opencode about selection',
-        mode = 'v',
-      },
-      {
-        '<leader>ot',
-        function()
-          require('opencode').toggle()
-        end,
-        desc = 'Toggle embedded opencode',
-      },
-      {
-        '<leader>on',
-        function()
-          require('opencode').command 'session_new'
-        end,
-        desc = 'New session',
-      },
-      {
-        '<leader>oy',
-        function()
-          require('opencode').command 'messages_copy'
-        end,
-        desc = 'Copy last message',
-      },
-      {
-        '<S-C-u>',
-        function()
-          require('opencode').command 'messages_half_page_up'
-        end,
-        desc = 'Scroll messages up',
-      },
-      {
-        '<S-C-d>',
-        function()
-          require('opencode').command 'messages_half_page_down'
-        end,
-        desc = 'Scroll messages down',
-      },
-      {
-        '<leader>op',
-        function()
-          require('opencode').select_prompt()
-        end,
-        desc = 'Select prompt',
-        mode = { 'n', 'v' },
-      },
-      -- Example: keymap for custom prompt
-      {
-        '<leader>oe',
-        function()
-          require('opencode').prompt 'Explain @cursor and its context'
-        end,
-        desc = 'Explain code near cursor',
-      },
-    },
   },
 
   -- require 'kickstart.plugins.autoformat',
