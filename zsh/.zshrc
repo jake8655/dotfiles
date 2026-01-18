@@ -128,9 +128,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # ssh keychain
 eval $(keychain --eval --quiet id_ed25519)
 
-# Thefuck
-eval $(thefuck --alias)
-
 # Cursor CLI
 export PATH="$HOME/.local/bin:$PATH"
 
