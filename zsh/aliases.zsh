@@ -26,6 +26,7 @@ alias wallp="wallpaper-cava --config /home/jake/.dotfiles/cava/config.toml"
 alias gdvim="nvim --listen ~/.cache/nvim/godot.pipe"
 alias glg="g lg"
 alias oc="opencode"
+alias ocx="OPENCODE_EXPERIMENTAL_MARKDOWN=1 OPENCODE_EXPERIMENTAL_PLAN_MODE=1 oc"
 
 # Browse projects
 function pj() {
