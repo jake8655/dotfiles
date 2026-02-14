@@ -22,11 +22,6 @@
 - Catch specific error types
 - Add context to thrown errors
 
-## Documentation
-
-- When the user requests code examples, setup or configuration steps,
-or library/API documentation, use the context7 tool
-
 ## IMPORTANT
 
 - DO NOT use `else` statements unless necessary
