@@ -11,6 +11,9 @@
 	"agent": {
 		"explore": {
 			"model": "opencode/kimi-k2.5-free"
+		},
+		"general": {
+			"model": "opencode/kimi-k2.5-free"
 		}
 	},
 	"mcp": {
