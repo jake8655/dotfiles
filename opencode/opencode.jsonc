@@ -10,10 +10,10 @@
 	},
 	"agent": {
 		"explore": {
-			"model": "opencode/kimi-k2.5-free"
+			"model": "opencode/glm-5-free"
 		},
 		"general": {
-			"model": "opencode/kimi-k2.5-free"
+			"model": "github-copilot/gpt-5.2-codex"
 		}
 	},
 	"mcp": {
