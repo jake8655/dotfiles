@@ -27,6 +27,7 @@ alias gdvim="nvim --listen ~/.cache/nvim/godot.pipe"
 alias glg="g lg"
 alias oc="opencode"
 alias ocx="OPENCODE_EXPERIMENTAL_MARKDOWN=1 OPENCODE_EXPERIMENTAL_PLAN_MODE=1 oc"
+alias ldk="lazydocker"
 
 # Browse projects
 function pj() {
