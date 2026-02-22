@@ -66,12 +66,6 @@ layout {
     center-focused-column "never"
     default-column-width { proportion 0.5; }
 
-    blur {
-        on
-        passes 4
-        radius 5.0
-    }
-
 
     focus-ring {
         width 3
@@ -91,11 +85,26 @@ layout {
     }
 }
 
+blur {
+  passes 4
+}
+
 // Prefer no client-side decorations
 prefer-no-csd
 
 // Screenshot path
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+// Layer rules
+
+// Enable blur behind the fuzzel launcher.
+layer-rule {
+    match namespace="^launcher$"
+
+    background-effect {
+        blur true
+    }
+}
 
 // Window rules
 
@@ -104,6 +113,9 @@ window-rule {
     geometry-corner-radius 16
     clip-to-geometry true
     draw-border-with-background false
+    background-effect {
+      blur true
+    }
 }
 
 // Block out password managers from screen capture.
