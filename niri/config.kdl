@@ -160,8 +160,8 @@ binds {
     Mod+B { spawn "zen-browser"; }
     Mod+D { spawn "discord"; }
     Mod+P { spawn "spotify"; }
-    Mod+F { fullscreen-window; }
-    Mod+Shift+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+    Mod+F { maximize-column; }
 
     // Focus movement
     Mod+H     { focus-column-left; }
