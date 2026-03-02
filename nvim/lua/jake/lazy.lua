@@ -132,14 +132,11 @@ require('lazy').setup({
     event = 'BufReadPre',
     opts = {
       filetypes = { '*' },
-      user_default_options = {
-        css = true, -- Enable all CSS *features*:
-        -- names, RGB, RGBA, RRGGBB, RRGGBBAA, AARRGGBB, rgb_fn, hsl_fn, oklch_fn
-        css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn, oklch_fn
-        -- Tailwind colors.  boolean|'normal'|'lsp'|'both'.  True sets to 'normal'
-        tailwind = 'lsp', -- Enable tailwind colors
-        tailwind_opts = { -- Options for highlighting tailwind names
-          update_names = true, -- When using tailwind = 'both', update tailwind names from LSP results.  See tailwind section
+      options = {
+        parsers = {
+          css = true,
+          css_fn = true,
+          tailwind = { enable = true, lsp = true, update_names = true },
         },
       },
     },
