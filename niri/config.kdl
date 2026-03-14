@@ -57,6 +57,9 @@ output "DP-1" {
     position x=3840 y=0
     scale 1
 }
+output "Apple Computer Inc Color LCD Unknown" {
+  scale 2
+}
 
 // Startup applications
 spawn-at-startup "/home/jake/.dotfiles/niri/startup.sh"
