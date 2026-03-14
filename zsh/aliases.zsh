@@ -22,7 +22,6 @@ alias dhp="bluetoothctl disconnect"
 # Connect to my bluetooth mouse
 alias bm="bluetoothctl connect 94:F6:D6:B6:6B:42"
 alias dbm="bluetoothctl disconnect"
-alias wallp="wallpaper-cava --config /home/jake/.dotfiles/cava/config.toml"
 alias gdvim="nvim --listen ~/.cache/nvim/godot.pipe"
 alias glg="g lg"
 alias oc="opencode"
