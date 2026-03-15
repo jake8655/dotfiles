@@ -18,7 +18,7 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup plugins
 require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
-  'NMAC427/guess-indent.nvim',
+  { 'NMAC427/guess-indent.nvim', opts = {} },
 
   {
     -- Highlight, edit, and navigate code
