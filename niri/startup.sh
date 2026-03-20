@@ -27,6 +27,9 @@ waybar -c ~/.dotfiles/waybar/config.jsonc -s ~/.dotfiles/waybar/style.css >> "$L
 echo "[$(date '+%H:%M:%S')] Starting swaync" >> "$LOG_FILE"
 swaync >> "$LOG_FILE" 2>&1 &
 
+# Clipboard manager
+cclipd -s 2 -t "image/png" -t "image/*" -t "text/plain;charset=utf-8" -t "text/*" -t "*" >> "$LOG_FILE" 2>&1 &
+
 # Polkit agent - delayed to avoid black window
 echo "[$(date '+%H:%M:%S')] Queueing polkit-agent (5s delay)" >> "$LOG_FILE"
 (sleep 5 && /usr/lib/polkit-kde-authentication-agent-1 >> "$LOG_FILE" 2>&1) &

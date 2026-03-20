@@ -133,6 +133,18 @@ window-rule {
     open-floating true
 }
 
+// Dmenu
+window-rule {
+    match app-id="dmenu"
+    match title="dmenu"
+    open-floating true
+    open-focused true
+    geometry-corner-radius 8
+    draw-border-with-background false
+    default-column-width { fixed 500; }
+    default-window-height { fixed 500; }
+}
+
 // Floating pavucontrol
 window-rule {
     match title="^pavucontrol$"
@@ -251,8 +263,10 @@ binds {
     Mod+S { spawn "sh" "-c" "wayfreeze --hide-cursor & PID=$!; sleep .1; grim -g \"$(slurp)\" - | wl-copy; kill $PID"; }
     Mod+Shift+S { spawn "sh" "-c" "grim -o $(niri msg outputs | grep 'ID' | head -1 | awk '{print $2}') - | wl-copy"; }
 
-    // Fuzzel
-    Mod+R { spawn "fuzzel"; }
+    // Dmenu
+    // Mod+R { spawn "sh" "-c" "kitty --class dmenu --title dmenu --override background=#222436 --override background_opacity=1.0 --override cursor_trail=0 -e otter-launcher"; }
+    Mod+R { spawn "sh" "-c" "foot --app-id dmenu -T foot fsel -vv -r -d -ss"; }
+    // Mod+R { spawn "sh" "-c" "ghostty --class=dmenu --title=dmenu -e otter-launcher"; }
 
     // Color picker
     Mod+X { spawn "sh" "-c" "color=$(hyprpicker) && wl-copy $color && convert -size 100x100 xc:$color /tmp/mycol.png && notify-send --expire-time=100000 -i /tmp/mycol.png 'Hyprpicker' $color"; }
