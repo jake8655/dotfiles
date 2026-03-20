@@ -4,7 +4,7 @@
   "WINDOW_BOUNDS": {
     "x": 0,
     "y": 0,
-    "width": 1870,
+    "width": 940,
     "height": 976
   },
   "OPEN_ON_STARTUP": false,
@@ -13,5 +13,7 @@
   "offloadAdmControls": true,
   "SKIP_HOST_UPDATE": true,
   "enableHardwareAcceleration": true,
-  "asyncVideoInputDeviceInit": false
+  "asyncVideoInputDeviceInit": false,
+  "enableLibOpenH264Electron": false,
+  "openH264Enabled": true
 }
