@@ -1,0 +1,46 @@
+# Font
+font-family = CaskaydiaCove Nerd Font
+font-size = 10
+font-variation = wght=600
+adjust-cell-height = 25%
+
+# Cursor
+cursor-color = #bbbbbb
+cursor-style = block
+cursor-style-blink = false
+
+# Colors (Catppuccin Mocha)
+background = #161926
+foreground = #CDD6F4
+selection-background = #44475a
+selection-foreground = #CDD6F4
+
+palette = 0=#45475A
+palette = 1=#F38BA8
+palette = 2=#A6E3A1
+palette = 3=#F9E2AF
+palette = 4=#89B4FA
+palette = 5=#F5C2E7
+palette = 6=#94E2D5
+palette = 7=#BAC2DE
+palette = 8=#585B70
+palette = 9=#F38BA8
+palette = 10=#A6E3A1
+palette = 11=#F9E2AF
+palette = 12=#89B4FA
+palette = 13=#F5C2E7
+palette = 14=#94E2D5
+palette = 15=#A6ADC8
+
+# Window
+background-opacity = 0.3
+window-decoration = false
+window-padding-x = 8
+window-padding-y = 8
+
+# Scrollback
+scrollback-limit = 50000
+
+# Misc
+bell-features = no-system,no-audio,no-attention,no-title,no-border
+copy-on-select = false
