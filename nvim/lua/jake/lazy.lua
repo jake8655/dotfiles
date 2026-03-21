@@ -135,8 +135,7 @@ require('lazy').setup({
       options = {
         parsers = {
           css = true,
-          css_fn = true,
-          tailwind = { enable = true, lsp = true, update_names = true },
+          tailwind = { enable = true, lsp = { enable = true }, update_names = true },
         },
       },
     },
