@@ -429,6 +429,9 @@ require('lazy').setup({
   -- },
 
   -- require 'kickstart.plugins.autoformat',
+
+  { 'nvim-mini/mini.align', version = false, opts = {} },
+
   ---@diagnostic disable-next-line: missing-fields
 }, {
   ui = { border = 'rounded' },
