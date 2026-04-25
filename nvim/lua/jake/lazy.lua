@@ -458,7 +458,21 @@ require('lazy').setup({
         -- to make `:Compile` replace special characters (e.g. `%`) in
         -- the command (and behave more like `:!`), add:
         bang_expansion = true,
+
+        auto_scroll = true,
+        focus_compilation_buffer = true,
+        use_circular_error_navigation = true,
       }
+
+      vim.keymap.set('n', '<leader>j', function()
+        vim.cmd [[belowright Compile]]
+      end, { desc = 'Compile current file' })
+      vim.keymap.set('n', '<leader>r', function()
+        vim.cmd [[belowright Recompile]]
+      end, { desc = 'Recompile current file' })
+
+      vim.keymap.set('n', '<leader>n', vim.cmd.NextError)
+      vim.keymap.set('n', '<leader>p', vim.cmd.PrevError)
     end,
   },
 
