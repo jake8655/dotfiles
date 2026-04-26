@@ -134,7 +134,7 @@ require('lazy').setup({
     'catgoose/nvim-colorizer.lua',
     event = 'BufReadPre',
     opts = {
-      filetypes = { '*' },
+      filetypes = { '*', '!python' },
       options = {
         parsers = {
           css = true,
@@ -458,6 +458,15 @@ require('lazy').setup({
         -- to make `:Compile` replace special characters (e.g. `%`) in
         -- the command (and behave more like `:!`), add:
         bang_expansion = true,
+
+        default_command = {
+          python = 'uv run %',
+          lua = 'lua %',
+          javascript = 'bun %',
+          typescript = 'bun %',
+          c = 'make -k',
+          cpp = 'make -k',
+        },
 
         auto_scroll = true,
         focus_compilation_buffer = true,
