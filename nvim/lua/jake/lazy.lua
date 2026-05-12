@@ -89,6 +89,7 @@ require('lazy').setup({
         replace_keycodes = false,
       })
       vim.g.copilot_no_tab_map = true
+      vim.cmd [[Copilot disable]]
     end,
   },
 
@@ -413,28 +414,35 @@ require('lazy').setup({
   },
 
   -- Dired (emacs) style file manager
-  -- {
-  --   'X3eRo0/dired.nvim',
-  --   dependencies = { 'MunifTanjim/nui.nvim' },
-  --   config = function()
-  --     require('dired').setup {
-  --       path_separator = '/',
-  --       show_banner = false,
-  --       show_icons = false,
-  --       show_hidden = true,
-  --       show_dot_dirs = true,
-  --       show_colors = true,
-  --     }
-  --   end,
-  -- },
+  {
+    'X3eRo0/dired.nvim',
+    dependencies = { 'MunifTanjim/nui.nvim' },
+    config = function()
+      require('dired').setup {
+        path_separator = '/',
+        show_banner = false,
+        show_icons = false,
+        show_hidden = true,
+        show_dot_dirs = true,
+        show_colors = true,
+        keybinds = {
+          dired_quit = '||||||',
+          dired_unmark_all = 'MU',
+          dired_duplicate = 'p',
+        },
+      }
+    end,
+  },
 
   -- require 'kickstart.plugins.autoformat',
 
   { 'nvim-mini/mini.align', version = false, opts = {} },
 
+  -- Local fork of compile-mode.nvim
   {
-    'ej-shafran/compile-mode.nvim',
-    version = '^5.0.0',
+    '/home/jake/Desktop/projects/compile-mode.nvim',
+    dir = '/home/jake/Desktop/projects/compile-mode.nvim',
+    dev = true,
     -- you can just use the latest version:
     -- branch = "latest",
     -- or the most up-to-date updates:
@@ -453,7 +461,7 @@ require('lazy').setup({
         input_word_completion = true,
 
         -- to add ANSI escape code support, add:
-        baleia_setup = true,
+        baleia_setup = false,
 
         -- to make `:Compile` replace special characters (e.g. `%`) in
         -- the command (and behave more like `:!`), add:
@@ -471,6 +479,7 @@ require('lazy').setup({
         auto_scroll = true,
         focus_compilation_buffer = true,
         use_circular_error_navigation = true,
+        use_pseudo_terminal = true,
       }
 
       vim.keymap.set('n', '<leader>j', function()
@@ -482,7 +491,82 @@ require('lazy').setup({
 
       vim.keymap.set('n', '<leader>n', vim.cmd.NextError)
       vim.keymap.set('n', '<leader>p', vim.cmd.PrevError)
+      vim.keymap.set('n', '<leader>i', vim.cmd.CompileSendInput)
     end,
+  },
+
+  -- Emacs-like compile mode
+  -- {
+  --   'ej-shafran/compile-mode.nvim',
+  --   version = '^5.0.0',
+  --   -- you can just use the latest version:
+  --   -- branch = "latest",
+  --   -- or the most up-to-date updates:
+  --   -- branch = "nightly",
+  --   dependencies = {
+  --     'nvim-lua/plenary.nvim',
+  --     -- if you want to enable coloring of ANSI escape codes in
+  --     -- compilation output, add:
+  --     { 'm00qek/baleia.nvim' },
+  --   },
+  --   config = function()
+  --     ---@type CompileModeOpts
+  --     vim.g.compile_mode = {
+  --       -- if you use something like `nvim-cmp` or `blink.cmp` for completion,
+  --       -- set this to fix tab completion in command mode:
+  --       input_word_completion = true,
+  --
+  --       -- to add ANSI escape code support, add:
+  --       baleia_setup = true,
+  --
+  --       -- to make `:Compile` replace special characters (e.g. `%`) in
+  --       -- the command (and behave more like `:!`), add:
+  --       bang_expansion = true,
+  --
+  --       default_command = {
+  --         python = 'uv run %',
+  --         lua = 'lua %',
+  --         javascript = 'bun %',
+  --         typescript = 'bun %',
+  --         c = 'make -k',
+  --         cpp = 'make -k',
+  --       },
+  --
+  --       auto_scroll = true,
+  --       focus_compilation_buffer = true,
+  --       use_circular_error_navigation = true,
+  --     }
+  --
+  --     vim.keymap.set('n', '<leader>j', function()
+  --       vim.cmd [[belowright Compile]]
+  --     end, { desc = 'Compile current file' })
+  --     vim.keymap.set('n', '<leader>r', function()
+  --       vim.cmd [[belowright Recompile]]
+  --     end, { desc = 'Recompile current file' })
+  --
+  --     vim.keymap.set('n', '<leader>n', vim.cmd.NextError)
+  --     vim.keymap.set('n', '<leader>p', vim.cmd.PrevError)
+  --   end,
+  -- },
+
+  -- Support for lean proof-assistant language
+  {
+    'Julian/lean.nvim',
+    event = { 'BufReadPre *.lean', 'BufNewFile *.lean' },
+
+    dependencies = {
+      -- optional dependencies:
+
+      -- 'nvim-telescope/telescope.nvim', -- for Lean-specific pickers
+      -- 'andymass/vim-matchup',          -- for enhanced % motion behavior
+      -- 'andrewradev/switch.vim',        -- for switch support
+      -- 'tomtom/tcomment_vim',           -- for commenting
+    },
+
+    ---@type lean.Config
+    opts = { -- see the manual for full configuration options
+      mappings = true,
+    },
   },
 
   ---@diagnostic disable-next-line: missing-fields
