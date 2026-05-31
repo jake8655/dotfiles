@@ -38,3 +38,12 @@
 # Aliases
 [alias]
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+# Codeberg
+[credential]
+	helper = cache --timeout 14400
+	helper = oauth
+[credential "https://codeberg.org"]
+	oauthClientId = 246ca3e8-e974-430c-b9ec-3d4e2b54ad28
+	oauthAuthURL = /login/oauth/authorize
+	oauthTokenURL = /login/oauth/access_token
