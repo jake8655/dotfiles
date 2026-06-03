@@ -65,31 +65,36 @@ output "Apple Computer Inc Color LCD Unknown" {
 spawn-at-startup "/home/jake/.dotfiles/niri/startup.sh"
 
 layout {
-    gaps 10
+    gaps 0
     center-focused-column "never"
     default-column-width { proportion 0.5; }
 
 
     focus-ring {
-        width 3
-        active-gradient from="#cba6f7ff" to="#94e2d5ff" angle=10
-        inactive-color "#313244"
-    }
-
-    border {
         off
     }
 
+    border {
+        width 2
+        active-color "#285577"
+        inactive-color "#222222"
+        urgent-color "#900000"
+    }
+
     struts {
-        left 15
-        right 15
-        top 15
-        bottom 15
+        left 0
+        right 0
+        top 0
+        bottom 0
     }
 }
 
 blur {
-  passes 4
+  off
+}
+
+animations {
+    off
 }
 
 // Prefer no client-side decorations
@@ -98,28 +103,7 @@ prefer-no-csd
 // Screenshot path
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
-// Layer rules
-
-// Enable blur behind the fuzzel launcher.
-layer-rule {
-    match namespace="^launcher$"
-
-    background-effect {
-        blur true
-    }
-}
-
 // Window rules
-
-// Rounded corners for all windows
-window-rule {
-    geometry-corner-radius 16
-    clip-to-geometry true
-    draw-border-with-background false
-    background-effect {
-      blur true
-    }
-}
 
 // Block out password managers from screen capture.
 window-rule {
@@ -136,14 +120,17 @@ window-rule {
     open-floating true
 }
 
+window-rule {
+    match app-id="zuumer"
+    open-fullscreen true
+}
+
 // Dmenu
 window-rule {
     match app-id="dmenu"
     match title="dmenu"
     open-floating true
     open-focused true
-    geometry-corner-radius 8
-    draw-border-with-background false
     default-column-width { fixed 500; }
     default-window-height { fixed 500; }
 }

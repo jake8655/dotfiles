@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -u
+
+first_line() {
+    awk 'NF { print; exit }' "$1" 2>/dev/null
+}
+
+colorize() {
+    printf '<span foreground="%s">%s</span>' "$1" "$2"
+}
+
+disk="$(df -h / 2>/dev/null | awk 'NR == 2 { print $4 }')"
+[[ -n "${disk}" ]] || disk="?"
+space="Free space: ${disk}"
+
+ram_used="$(awk '
+    /^MemTotal:/ { total = $2 }
+    /^MemAvailable:/ { available = $2 }
+    END {
+        if (total > 0 && available > 0) {
+            used = total - available
+            printf "%.1fG", used / 1024 / 1024
+        }
+    }
+' /proc/meminfo 2>/dev/null)"
+[[ -n "${ram_used}" ]] || ram_used="?"
+ram="RAM: ${ram_used}"
+
+wifi_iface="$(iw dev 2>/dev/null | awk '$1 == "Interface" { print $2; exit }')"
+if [[ -n "${wifi_iface}" ]]; then
+    wifi_ip="$(ip -4 addr show dev "${wifi_iface}" 2>/dev/null | awk '/inet / { sub("/.*", "", $2); print $2; exit }')"
+    if [[ -n "${wifi_ip}" ]]; then
+        quality="$(awk -v iface="${wifi_iface}:" '$1 == iface { gsub("\\.", "", $3); printf "%d%%", ($3 / 70) * 100 }' /proc/net/wireless 2>/dev/null)"
+        [[ -n "${quality}" ]] || quality="up"
+        wifi="$(colorize "#00ff00" "W: (${quality}) ${wifi_ip}")"
+    else
+        wifi="$(colorize "#ff0000" "W: down")"
+    fi
+else
+    wifi="$(colorize "#ff0000" "W: down")"
+fi
+
+route_iface="$(ip route get 1.1.1.1 2>/dev/null | awk '{ for (i = 1; i <= NF; i++) if ($i == "dev") { print $(i + 1); exit } }')"
+ethernet="$(colorize "#ff0000" "E: down")"
+if [[ -n "${route_iface}" && "${route_iface}" != "${wifi_iface}" ]]; then
+    route_ip="$(ip -4 addr show dev "${route_iface}" 2>/dev/null | awk '/inet / { sub("/.*", "", $2); print $2; exit }')"
+    if [[ -n "${route_ip}" ]]; then
+        speed="$(first_line "/sys/class/net/${route_iface}/speed")"
+        if [[ "${speed}" =~ ^[0-9]+$ ]]; then
+            ethernet="$(colorize "#00ff00" "E: ${route_ip} (${speed} Mbit/s)")"
+        else
+            ethernet="$(colorize "#00ff00" "E: ${route_ip}")"
+        fi
+    fi
+fi
+
+battery="Battery: AC"
+for bat in /sys/class/power_supply/BAT*; do
+    [[ -r "${bat}/capacity" ]] || continue
+    capacity="$(first_line "${bat}/capacity")"
+    status="$(first_line "${bat}/status")"
+    [[ -n "${capacity}" ]] || capacity="?"
+    [[ -n "${status}" ]] || status="?"
+    battery="Baterry: ${capacity}% ${status}"
+    break
+done
+
+load_str="$(awk '{ print $1 }' /proc/loadavg 2>/dev/null)"
+[[ -n "${load_str}" ]] || load_str="?"
+load="Load: ${load_str}"
+
+now="$(date '+%Y-%m-%d %H:%M:%S')"
+
+printf '| %s | %s | %s | %s | %s | %s | %s\n' \
+    "${space}" "${ram}" "${wifi}" "${ethernet}" "${battery}" "${load}" "${now}"

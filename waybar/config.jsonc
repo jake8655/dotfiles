@@ -1,166 +1,28 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 46,
+  "height": 18,
   "spacing": 0,
-  "margin-top": 0,
-  "margin-left": 10,
-  "margin-right": 10,
-  "modules-left": [
-    "custom/launcher",
-    "niri/workspaces",
-    "cpu",
-    "memory",
-    "temperature",
-    "disk"
-  ],
-  "modules-right": [
-    "custom/codexbar",
-    "network",
-    "pulseaudio",
-    "custom/notifications",
-    "niri/language",
-    "battery",
-    "tray",
-    "clock",
-    "custom/cycle_wall",
-    "custom/custom"
-  ],
-  "custom/launcher": {
-    "format": "{}",
-    "tooltip": true,
-    "exec": "echo '{\"text\":\" \",\"tooltip\":\"Run\"}'",
-    "return-type": "json",
-    "on-click": "pkill wofi || wofi --show drun -n",
-    "on-click-right": "pkill wofi || wofi --show run -n"
-  },
+  "margin": 0,
+  "exclusive": true,
+  "modules-left": ["niri/workspaces", "niri/window"],
+  "modules-center": [],
+  "modules-right": ["custom/codexbar", "custom/computer-status", "tray"],
   "niri/workspaces": {
-    "format": "{value}"
+    "format": "{value}",
+    "disable-scroll": true
   },
-  "cpu": {
-    "format": " {usage}%",
-    "tooltip": true,
-    "on-click": "kitty --start-as=fullscreen --title all_is_kitty sh -c 'btop'",
-    "interval": 2
+  "niri/window": {
+    "format": " {app_id}",
+    "separate-outputs": false,
+    "max-length": 40
   },
-  "memory": {
-    "format": " {}%",
-    "tooltip": true,
-    "on-click": "kitty --start-as=fullscreen --title all_is_kitty sh -c 'btop'",
-    "interval": 2
-  },
-  "temperature": {
-    "critical-threshold": 70,
-    "format-critical": " {temperatureC}°C",
-    "format": " {temperatureC}°C",
-    "tooltip": true,
-    "on-click": "kitty --start-as=fullscreen --title all_is_kitty sh -c 'btop'",
-    "interval": 2
-  },
-  "disk": {
-    "format": " {percentage_used}% ({free})",
-    "tooltip": true,
-    "path": "/home/jake",
-    "on-click": "kitty --start-as=fullscreen --title all_is_kitty sh -c 'btop'",
-    "interval": 2
-  },
-  "network": {
-    "format": "↕{bandwidthTotalBytes}",
-    "format-disconnected": "{icon} No Internet",
-    "format-linked": " {ifname} (No IP)",
-    "format-alt": "↕{bandwidthUpBytes} | ↕{bandwidthDownBytes}",
-    "tooltip-format": "{ifname}: {ipaddr}/{cidr}  {gwaddr}",
-    "tooltip-format-wifi": "{icon} {essid} ({signalStrength}%)",
-    "tooltip-format-ethernet": "{icon} {ipaddr}/{cidr}",
-    "tooltip-format-disconnected": "{icon} Disconnected",
-    "on-click-right": "iwgtk",
-    "format-icons": {
-      "ethernet": "",
-      "disconnected": "!",
-      "wifi": ["睊", "直"]
-    },
-    "interval": 2
-  },
-  "pulseaudio": {
-    "format": "{icon} {volume}%",
-    "format-bluetooth": "{icon} {volume}%",
-    "format-bluetooth-muted": "",
-    "format-muted": "",
-    "format-source": "{volume}% ",
-    "format-source-muted": "",
-    "format-icons": {
-      "headphone": "",
-      "headset": "",
-      "phone": "",
-      "portable": "",
-      "car": " ",
-      "default": ["", "", ""]
-    },
-    "on-click": "pavucontrol"
-  },
-  "custom/notifications": {
+  "custom/computer-status": {
+    "exec": "/home/jake/.dotfiles/waybar/computer-status",
+    "format": "{}",
+    "interval": 5,
     "tooltip": false,
-    "format": "{icon}",
-    "format-icons": {
-      "notification": "<span foreground='red'><sup></sup></span>",
-      "none": "",
-      "dnd-notification": "<span foreground='red'><sup></sup></span>",
-      "dnd-none": ""
-    },
-    "return-type": "json",
-    "exec-if": "which swaync-client",
-    "exec": "swaync-client -swb",
-    "on-click": "swaync-client -t -sw",
-    "on-click-right": "swaync-client -d -sw",
-    "escape": true
-  },
-  "niri/language": {
-    "format": "\uf11c {}",
-    "format-en": "en",
-    "format-sk": "sk",
-    "format-hu": "hu",
-    "format-es": "es"
-  },
-  "battery": {
-    "states": {
-      "good": 95,
-      "warning": 30,
-      "critical": 20
-    },
-    "format": "{icon} {capacity}%",
-    "format-charging": "{icon} {capacity}% ",
-    "format-plugged": "{icon} {capacity}% ",
-    "format-icons": ["", "", "", "", ""],
-    "interval": 1
-  },
-  "tray": {
-    "icon-size": 15,
-    "spacing": 15
-  },
-  "clock": {
-    "timezone": "Europe/Bratislava",
-    "format": " {:%d-%m-%Y <small>%a</small> %H:%M}",
-    "format-alt": " {:%A %B %d %Y (%V) | %r}",
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-    "calendar-weeks-pos": "right",
-    "today-format": "<span color='#f38ba8'><b><u>{}</u></b></span>",
-    "format-calendar": "<span color='#f2cdcd'><b>{}</b></span>",
-    "format-calendar-weeks": "<span color='#94e2d5'><b>W{:%U}</b></span>",
-    "format-calendar-weekdays": "<span color='#f9e2af'><b>{}</b></span>",
-    "interval": 1
-  },
-  "custom/cycle_wall": {
-    "format": "{}",
-    "exec": "~/.dotfiles/scripts/tools/expand wall",
-    "return-type": "json",
-    "on-click": "~/.dotfiles/scripts/tools/expand cycle",
-    "on-click-right": "~/.dotfiles/scripts/tools/expand cycler"
-  },
-  "custom/custom": {
-    "format": "{}",
-    "exec": "~/.dotfiles/scripts/tools/expand arrow-icon",
-    "on-click": "~/.dotfiles/scripts/tools/expand_toolbar",
-    "return-type": "json"
+    "escape": false
   },
   "custom/codexbar": {
     "exec": "codexbar",
@@ -169,5 +31,9 @@
     "signal": 12,
     "tooltip": true,
     "on-click": "xdg-open https://chatgpt.com/codex/settings/usage"
+  },
+  "tray": {
+    "icon-size": 14,
+    "spacing": 4
   }
 }
