@@ -70,7 +70,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git fzf)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -102,6 +102,15 @@ export EDITOR='nvim'
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 bindkey -v
+
+# History search
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=10000
+setopt append_history
+setopt share_history
+setopt hist_ignore_dups
+setopt hist_reduce_blanks
 
 # Pipx
 export PATH="$HOME/.local/bin:$PATH"
