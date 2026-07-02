@@ -7,7 +7,7 @@
   "exclusive": true,
   "modules-left": ["niri/workspaces", "niri/window"],
   "modules-center": [],
-  "modules-right": ["custom/codexbar", "custom/computer-status", "tray"],
+  "modules-right": ["custom/codexbar", "pulseaudio", "custom/computer-status", "tray"],
   "niri/workspaces": {
     "format": "{value}",
     "disable-scroll": true
@@ -31,6 +31,14 @@
     "signal": 12,
     "tooltip": true,
     "on-click": "xdg-open https://chatgpt.com/codex/settings/usage"
+  },
+  "pulseaudio": {
+    "format": "| S: {volume}%",
+    "format-bluetooth": "| S: {volume}% (H)",
+    "format-muted": "| S: muted",
+    "format-bluetooth-muted": "| S: muted (H)",
+    "tooltip": false,
+    "on-click": "pavucontrol"
   },
   "tray": {
     "icon-size": 14,

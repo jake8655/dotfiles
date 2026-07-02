@@ -55,7 +55,8 @@ window#waybar {
 }
 
 #custom-codexbar,
-#custom-computer-status {
+#custom-computer-status,
+#pulseaudio {
   background: #000000;
   color: #ffffff;
   padding: 0 4px;
