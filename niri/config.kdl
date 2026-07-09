@@ -161,7 +161,7 @@ binds {
     Mod+E { spawn "dolphin"; }
     Mod+V { toggle-window-floating; }
     Mod+Shift+V { switch-focus-between-floating-and-tiling; }
-    Mod+B { spawn "zen-browser"; }
+    Mod+B { spawn "helium"; }
     Mod+D { spawn "discord"; }
     Mod+P { spawn "spotify"; }
     Mod+Shift+F { fullscreen-window; }
