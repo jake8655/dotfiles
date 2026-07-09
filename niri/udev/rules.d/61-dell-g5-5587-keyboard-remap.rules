@@ -1,0 +1,1 @@
+ACTION=="add|change", SUBSYSTEM=="input", KERNEL=="event*", DRIVERS=="atkbd", ATTRS{name}=="AT Translated Set 2 keyboard", RUN+="/home/jake/.dotfiles/niri/remap-built-in-keyboard.sh %E{DEVNAME}"
