@@ -1,4 +1,5 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 ~/.dotfiles/scripts/lock
 sleep 2
