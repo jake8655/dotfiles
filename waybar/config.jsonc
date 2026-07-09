@@ -7,7 +7,7 @@
   "exclusive": true,
   "modules-left": ["niri/workspaces", "niri/window"],
   "modules-center": [],
-  "modules-right": ["custom/codexbar", "pulseaudio", "custom/computer-status", "tray"],
+  "modules-right": ["custom/codexbar", "custom/wallpaper", "custom/power-profile", "pulseaudio", "custom/computer-status", "tray"],
   "niri/workspaces": {
     "format": "{value}",
     "disable-scroll": true
@@ -31,6 +31,22 @@
     "signal": 12,
     "tooltip": true,
     "on-click": "xdg-open https://chatgpt.com/codex/settings/usage"
+  },
+  "custom/wallpaper": {
+    "exec": "echo W",
+    "format": "| {}",
+    "tooltip": true,
+    "tooltip-format": "Wallpaper: left next, right previous",
+    "on-click": "/home/jake/.dotfiles/scripts/tools/expand cycle",
+    "on-click-right": "/home/jake/.dotfiles/scripts/tools/expand cycler"
+  },
+  "custom/power-profile": {
+    "exec": "/home/jake/.dotfiles/waybar/power-profile",
+    "format": "{}",
+    "interval": 30,
+    "signal": 8,
+    "tooltip": false,
+    "on-click": "/home/jake/.dotfiles/waybar/power-profile --cycle"
   },
   "pulseaudio": {
     "format": "| S: {volume}%",

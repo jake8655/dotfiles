@@ -9,9 +9,70 @@ colorize() {
     printf '<span foreground="%s">%s</span>' "$1" "$2"
 }
 
+iface_ip() {
+    ip -4 addr show dev "$1" 2>/dev/null | awk '/inet / { sub("/.*", "", $2); print $2; exit }'
+}
+
+default_iface() {
+    ip route get 1.1.1.1 2>/dev/null | awk '{ for (i = 1; i <= NF; i++) if ($i == "dev") { print $(i + 1); exit } }'
+}
+
+is_wifi_iface() {
+    local iface="$1"
+
+    [[ -d "/sys/class/net/${iface}/wireless" ]] && return 0
+    grep -qx 'DEVTYPE=wlan' "/sys/class/net/${iface}/uevent" 2>/dev/null && return 0
+    command -v iw >/dev/null 2>&1 && iw dev "${iface}" info >/dev/null 2>&1 && return 0
+    command -v nmcli >/dev/null 2>&1 && [[ "$(nmcli -t -g GENERAL.TYPE dev show "${iface}" 2>/dev/null)" == "wifi" ]] && return 0
+
+    return 1
+}
+
+first_wifi_iface() {
+    local iface iface_path
+
+    iface="$(default_iface)"
+    if [[ -n "${iface}" ]] && is_wifi_iface "${iface}"; then
+        printf '%s\n' "${iface}"
+        return
+    fi
+
+    for iface_path in /sys/class/net/*; do
+        iface="${iface_path##*/}"
+        if is_wifi_iface "${iface}"; then
+            printf '%s\n' "${iface}"
+            return
+        fi
+    done
+}
+
+first_ethernet_iface() {
+    local iface iface_path
+
+    iface="$(default_iface)"
+    if [[ -n "${iface}" && "${iface}" != "lo" ]] && ! is_wifi_iface "${iface}"; then
+        printf '%s\n' "${iface}"
+        return
+    fi
+
+    for iface_path in /sys/class/net/*; do
+        iface="${iface_path##*/}"
+        [[ "${iface}" != "lo" ]] || continue
+        is_wifi_iface "${iface}" && continue
+        [[ "$(first_line "/sys/class/net/${iface}/type")" == "1" ]] || continue
+        printf '%s\n' "${iface}"
+        return
+    done
+}
+
 disk="$(df -h / 2>/dev/null | awk 'NR == 2 { print $4 }')"
 [[ -n "${disk}" ]] || disk="?"
 space="Free space: ${disk}"
+if awk '$2 == "/data" { found = 1 } END { exit !found }' /proc/mounts 2>/dev/null; then
+    data_disk="$(df -h /data 2>/dev/null | awk 'NR == 2 { print $4 }')"
+    [[ -n "${data_disk}" ]] || data_disk="?"
+    space="${space}, ${data_disk}"
+fi
 
 ram_used="$(awk '
     /^MemTotal:/ { total = $2 }
@@ -26,9 +87,9 @@ ram_used="$(awk '
 [[ -n "${ram_used}" ]] || ram_used="?"
 ram="RAM: ${ram_used}"
 
-wifi_iface="$(iw dev 2>/dev/null | awk '$1 == "Interface" { print $2; exit }')"
+wifi_iface="$(first_wifi_iface)"
 if [[ -n "${wifi_iface}" ]]; then
-    wifi_ip="$(ip -4 addr show dev "${wifi_iface}" 2>/dev/null | awk '/inet / { sub("/.*", "", $2); print $2; exit }')"
+    wifi_ip="$(iface_ip "${wifi_iface}")"
     if [[ -n "${wifi_ip}" ]]; then
         quality="$(awk -v iface="${wifi_iface}:" '$1 == iface { gsub("\\.", "", $3); printf "%d%%", ($3 / 70) * 100 }' /proc/net/wireless 2>/dev/null)"
         [[ -n "${quality}" ]] || quality="up"
@@ -40,36 +101,46 @@ else
     wifi="$(colorize "#ff0000" "W: down")"
 fi
 
-route_iface="$(ip route get 1.1.1.1 2>/dev/null | awk '{ for (i = 1; i <= NF; i++) if ($i == "dev") { print $(i + 1); exit } }')"
+ethernet_iface="$(first_ethernet_iface)"
 ethernet="$(colorize "#ff0000" "E: down")"
-if [[ -n "${route_iface}" && "${route_iface}" != "${wifi_iface}" ]]; then
-    route_ip="$(ip -4 addr show dev "${route_iface}" 2>/dev/null | awk '/inet / { sub("/.*", "", $2); print $2; exit }')"
-    if [[ -n "${route_ip}" ]]; then
-        speed="$(first_line "/sys/class/net/${route_iface}/speed")"
+if [[ -n "${ethernet_iface}" ]]; then
+    ethernet_ip="$(iface_ip "${ethernet_iface}")"
+    if [[ -n "${ethernet_ip}" ]]; then
+        speed="$(first_line "/sys/class/net/${ethernet_iface}/speed")"
         if [[ "${speed}" =~ ^[0-9]+$ ]]; then
-            ethernet="$(colorize "#00ff00" "E: ${route_ip} (${speed} Mbit/s)")"
+            ethernet="$(colorize "#00ff00" "E: ${ethernet_ip} (${speed} Mbit/s)")"
         else
-            ethernet="$(colorize "#00ff00" "E: ${route_ip}")"
+            ethernet="$(colorize "#00ff00" "E: ${ethernet_ip}")"
         fi
     fi
 fi
 
-battery="Battery: AC"
-for bat in /sys/class/power_supply/BAT*; do
-    [[ -r "${bat}/capacity" ]] || continue
-    capacity="$(first_line "${bat}/capacity")"
-    status="$(first_line "${bat}/status")"
-    [[ -n "${capacity}" ]] || capacity="?"
-    [[ -n "${status}" ]] || status="?"
-    battery="Baterry: ${capacity}% ${status}"
-    break
-done
+status_parts=("${space}" "${ram}" "${wifi}" "${ethernet}")
+
+if /home/jake/.dotfiles/waybar/is-laptop; then
+    battery="Battery: AC"
+    for bat in /sys/class/power_supply/BAT*; do
+        [[ -r "${bat}/capacity" ]] || continue
+        capacity="$(first_line "${bat}/capacity")"
+        status="$(first_line "${bat}/status")"
+        [[ -n "${capacity}" ]] || capacity="?"
+        [[ -n "${status}" ]] || status="?"
+        battery="Battery: ${capacity}% ${status}"
+        break
+    done
+    status_parts+=("${battery}")
+fi
 
 load_str="$(awk '{ print $1 }' /proc/loadavg 2>/dev/null)"
 [[ -n "${load_str}" ]] || load_str="?"
 load="Load: ${load_str}"
 
 now="$(date '+%Y-%m-%d %H:%M:%S')"
+status_parts+=("${load}" "${now}")
 
-printf '| %s | %s | %s | %s | %s | %s | %s\n' \
-    "${space}" "${ram}" "${wifi}" "${ethernet}" "${battery}" "${load}" "${now}"
+printf '| '
+printf '%s' "${status_parts[0]}"
+for part in "${status_parts[@]:1}"; do
+    printf ' | %s' "${part}"
+done
+printf '\n'

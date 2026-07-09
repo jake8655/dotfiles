@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+shopt -s nullglob
+
+for bat in /sys/class/power_supply/BAT*; do
+    [[ -r "${bat}/capacity" ]] && exit 0
+done
+
+if [[ -r /sys/class/dmi/id/chassis_type ]]; then
+    case "$(</sys/class/dmi/id/chassis_type)" in
+        8|9|10|14|30|31|32)
+            exit 0
+            ;;
+    esac
+fi
+
+exit 1

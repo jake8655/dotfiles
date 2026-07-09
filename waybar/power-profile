@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+signal_waybar() {
+    pkill -RTMIN+8 waybar 2>/dev/null || true
+}
+
+is_laptop() {
+    /home/jake/.dotfiles/waybar/is-laptop
+}
+
+active_profile() {
+    busctl get-property \
+        net.hadess.PowerProfiles \
+        /net/hadess/PowerProfiles \
+        net.hadess.PowerProfiles \
+        ActiveProfile 2>/dev/null |
+        sed -n 's/^s "\([^"]*\)"/\1/p'
+}
+
+set_profile() {
+    busctl set-property \
+        net.hadess.PowerProfiles \
+        /net/hadess/PowerProfiles \
+        net.hadess.PowerProfiles \
+        ActiveProfile s "$1" >/dev/null
+}
+
+cycle_profile() {
+    local active next
+
+    active="$(active_profile)"
+    case "${active}" in
+        power-saver) next="balanced" ;;
+        balanced) next="performance" ;;
+        performance) next="power-saver" ;;
+        *) next="balanced" ;;
+    esac
+
+    set_profile "${next}"
+    signal_waybar
+}
+
+label_profile() {
+    case "$1" in
+        power-saver) printf 'power-saver' ;;
+        balanced) printf 'balanced' ;;
+        performance) printf 'performance' ;;
+        *) printf 'unknown' ;;
+    esac
+}
+
+case "${1:-}" in
+    --cycle)
+        is_laptop || exit 0
+        cycle_profile
+        ;;
+    *)
+        is_laptop || exit 0
+        printf '| P: %s\n' "$(label_profile "$(active_profile)")"
+        ;;
+esac

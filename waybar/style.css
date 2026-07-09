@@ -55,6 +55,8 @@ window#waybar {
 }
 
 #custom-codexbar,
+#custom-wallpaper,
+#custom-power-profile,
 #custom-computer-status,
 #pulseaudio {
   background: #000000;
