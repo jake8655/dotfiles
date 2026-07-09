@@ -8,11 +8,14 @@ echo "=== Niri Startup Log $(date) ===" > "$LOG_FILE"
 
 # D-Bus environment (needed first, no delay)
 echo "[$(date '+%H:%M:%S')] Setting up D-Bus environment" >> "$LOG_FILE"
-dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE GTK_THEME QT_QPA_PLATFORMTHEME KDE_COLOR_SCHEME XCURSOR_THEME XCURSOR_SIZE
+
+echo "[$(date '+%H:%M:%S')] Applying dark theme settings" >> "$LOG_FILE"
+/home/jake/.dotfiles/scripts/apply-dark-theme >> "$LOG_FILE" 2>&1
 
 # Start swww-daemon first (needed for wallpaper)
 echo "[$(date '+%H:%M:%S')] Starting swww-daemon" >> "$LOG_FILE"
-swww-daemon &
+awww-daemon &
 sleep 2
 
 # Wallpaper

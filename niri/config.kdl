@@ -1,7 +1,9 @@
 environment {
     XCURSOR_SIZE "24"
     XCURSOR_THEME "BreezeX-RosePine-Linux"
-    QT_QPA_PLATFORMTHEME "qt5ct"
+    GTK_THEME "Adwaita:dark"
+    QT_QPA_PLATFORMTHEME "gtk3"
+    KDE_COLOR_SCHEME "BreezeDark"
 
     // Nvidia vars
     LIBVA_DRIVER_NAME "nvidia"
