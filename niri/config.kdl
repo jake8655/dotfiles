@@ -62,6 +62,11 @@ output "DP-1" {
 output "Apple Computer Inc Color LCD Unknown" {
   scale 2
 }
+output "LG Display 0x05D0 Unknown" {
+    mode "1920x1080"
+    position x=1920 y=0
+    scale 1
+}
 
 // Startup applications
 spawn-at-startup "/home/jake/.dotfiles/niri/startup.sh"
@@ -161,7 +166,7 @@ binds {
     Mod+E { spawn "dolphin"; }
     Mod+V { toggle-window-floating; }
     Mod+Shift+V { switch-focus-between-floating-and-tiling; }
-    Mod+B { spawn "helium"; }
+    Mod+B { spawn "helium-browser"; }
     Mod+D { spawn "discord"; }
     Mod+P { spawn "spotify"; }
     Mod+Shift+F { fullscreen-window; }
