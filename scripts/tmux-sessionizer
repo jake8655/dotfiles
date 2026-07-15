@@ -1,25 +1,153 @@
 #!/usr/bin/env bash
 
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+config_file=${WORKTREE_CONFIG_FILE:-"$script_dir/../config/worktrees.sh"}
+
+if [[ ! -f $config_file ]]; then
+    printf 'tmux-sessionizer: config not found: %s\n' "$config_file" >&2
+    exit 1
+fi
+
+# shellcheck source=../config/worktrees.sh
+source "$config_file"
+
+list_candidates() {
+    local dir
+    local -a search_roots=("${SESSIONIZER_SEARCH_ROOTS[@]}")
+    local -a worktree_roots=("$WORKTREE_ROOT" "$CODEX_WORKTREE_ROOT")
+
+    # Keep the existing project directories in the picker.
+    find "${search_roots[@]}" -mindepth 1 -maxdepth 1 -type d 2> /dev/null
+
+    # Add every worktree belonging to repositories found in those directories.
+    while IFS= read -r dir; do
+        git -C "$dir" worktree list --porcelain 2> /dev/null \
+            | sed -n 's/^worktree //p'
+    done < <(find "${search_roots[@]}" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)
+
+    # Also include sibling worktrees when invoked from inside any Git repository.
+    git worktree list --porcelain 2> /dev/null | sed -n 's/^worktree //p'
+
+    # Include managed worktrees even when their main checkout is outside the search roots.
+    find "${worktree_roots[@]}" -mindepth 2 -maxdepth 6 \
+        -name node_modules -prune -o -type f -name .git -printf '%h\n' 2> /dev/null
+}
+
+git_identity() {
+    local path=$1
+    local root branch
+
+    root=$(git -C "$path" rev-parse --show-toplevel 2> /dev/null) || return 1
+    branch=$(git -C "$path" symbolic-ref --quiet --short HEAD 2> /dev/null) \
+        || branch=$(git -C "$path" rev-parse --short HEAD 2> /dev/null) \
+        || return 1
+
+    printf '%s\t%s\n' "$(basename "$root")" "$branch"
+}
+
+codex_worktree_id() {
+    local path=$1
+    local relative=${path#"$CODEX_WORKTREE_ROOT/"}
+
+    [[ $relative != "$path" && $relative == */* ]] || return 1
+    printf '%s\n' "${relative%%/*}"
+}
+
+format_candidate() {
+    local path=$1
+    local identity repo branch codex_id
+
+    if identity=$(git_identity "$path"); then
+        repo=${identity%%$'\t'*}
+        branch=${identity#*$'\t'}
+        if codex_id=$(codex_worktree_id "$path"); then
+            printf '%s\t%s--%s\t%s\n' "$repo" "${branch#codex/}" "$codex_id" "$path"
+        else
+            printf '%s\t%s\t%s\n' "$repo" "$branch" "$path"
+        fi
+    else
+        printf '%s\t%s\t%s\n' "$(basename "$path")" '-' "$path"
+    fi
+}
+
+align_candidates() {
+    awk -F '\t' '
+        {
+            project[NR] = $1
+            branch[NR] = $2
+            path[NR] = $3
+            if (length($1) > project_width) project_width = length($1)
+            if (length($2) > branch_width) branch_width = length($2)
+        }
+        END {
+            for (i = 1; i <= NR; i++) {
+                printf "%-*s  %-*s  %s\t%s\n", project_width, project[i], branch_width, branch[i], path[i], path[i]
+            }
+        }
+    '
+}
+
+session_component() {
+    printf '%s' "$1" | tr '/.' '-_' | sed 's/[^[:alnum:]_-]/-/g'
+}
+
+set_session_metadata() {
+    tmux set-option -q -t "$selected_name" @project_name "$repo"
+
+    if [[ -n $branch ]]; then
+        tmux set-option -q -t "$selected_name" @git_branch "$branch"
+    else
+        tmux set-option -qu -t "$selected_name" @git_branch
+    fi
+
+    if [[ -n $codex_id ]]; then
+        tmux set-option -q -t "$selected_name" @codex_id "$codex_id"
+    else
+        tmux set-option -qu -t "$selected_name" @codex_id
+    fi
+}
+
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(find ~/Desktop/projects ~/Desktop/projects/school ~/.config ~/ ~/Desktop/work ~/Desktop/projects/fivem ~/.t3/worktrees/ -mindepth 1 -maxdepth 1 -type d | fzf)
+    selected=$(while IFS= read -r path; do
+        format_candidate "$path"
+    done < <(list_candidates | awk '!seen[$0]++') | align_candidates | fzf --delimiter=$'\t' --with-nth=1)
+    selected=${selected##*$'\t'}
 fi
 
 if [[ -z $selected ]]; then
     exit 0
 fi
 
-selected_name=$(basename "$selected" | tr . _)
+repo=''
+branch=''
+codex_id=''
+
+if identity=$(git_identity "$selected"); then
+    repo=${identity%%$'\t'*}
+    branch=${identity#*$'\t'}
+    if codex_id=$(codex_worktree_id "$selected"); then
+        branch=${branch#codex/}
+        selected_name="$(session_component "$repo")--$(session_component "$branch")--$(session_component "$codex_id")"
+    else
+        selected_name="$(session_component "$repo")--$(session_component "$branch")"
+    fi
+else
+    repo=$(basename "$selected")
+    selected_name=$(session_component "$repo")
+fi
 tmux_running=$(pgrep tmux)
 
 if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -s $selected_name -c $selected
-    exit 0
+    tmux new-session -ds "$selected_name" -c "$selected"
+    set_session_metadata
+    exec tmux attach-session -t "$selected_name"
 fi
 
 if ! tmux has-session -t=$selected_name 2> /dev/null; then
     tmux new-session -ds $selected_name -c $selected
 fi
 
+set_session_metadata
 tmux switch-client -t $selected_name
