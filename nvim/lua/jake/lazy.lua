@@ -569,6 +569,19 @@ require('lazy').setup({
     },
   },
 
+  -- Worktrees
+  {
+    'afonsofrancof/worktrees.nvim',
+    event = 'VeryLazy',
+    opts = {
+      mappings = {
+        create = '<leader>tc',
+        delete = '<leader>td',
+        switch = '<leader>ts',
+      },
+    },
+  },
+
   ---@diagnostic disable-next-line: missing-fields
 }, {
   ui = { border = 'rounded' },
