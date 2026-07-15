@@ -30,6 +30,9 @@ waybar -c ~/.dotfiles/waybar/config.jsonc -s ~/.dotfiles/waybar/style.css >> "$L
 echo "[$(date '+%H:%M:%S')] Starting swaync" >> "$LOG_FILE"
 swaync >> "$LOG_FILE" 2>&1 &
 
+# Battery threshold notifications
+/home/jake/.dotfiles/scripts/battery-notify >> "$LOG_FILE" 2>&1 &
+
 # Clipboard manager
 cclipd -s 2 -t "image/png" -t "image/*" -t "text/plain;charset=utf-8" -t "text/*" -t "*" >> "$LOG_FILE" 2>&1 &
 

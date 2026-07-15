@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -u
+
+# Only keep one monitor alive if the compositor is restarted.
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/battery-notify.lock"
+flock -n 9 || exit 0
+
+get_battery() {
+    for battery in /sys/class/power_supply/BAT*; do
+        [[ -r "$battery/capacity" && -r "$battery/status" ]] || continue
+        printf '%s\n' "$battery"
+        return 0
+    done
+    return 1
+}
+
+battery=$(get_battery) || exit 0
+previous_band=""
+
+while true; do
+    capacity=$(<"$battery/capacity")
+    status=$(<"$battery/status")
+    band="ok"
+
+    if [[ "$status" == "Discharging" ]]; then
+        if (( capacity <= 5 )); then
+            band="5"
+        elif (( capacity <= 10 )); then
+            band="10"
+        elif (( capacity <= 20 )); then
+            band="20"
+        fi
+    fi
+
+    if [[ "$band" != "$previous_band" ]]; then
+        case "$band" in
+            20)
+                notify-send -u normal -i battery-low \
+                    "Battery low" "Battery is at ${capacity}% (20% threshold)."
+                ;;
+            10)
+                notify-send -u critical -i battery-caution \
+                    "Battery very low" "Battery is at ${capacity}% (10% threshold). Connect the charger."
+                ;;
+            5)
+                notify-send -u critical -i battery-empty \
+                    "Battery critical" "Battery is at ${capacity}% (5% threshold). Connect the charger now."
+                ;;
+        esac
+    fi
+
+    previous_band="$band"
+    sleep 30
+done
