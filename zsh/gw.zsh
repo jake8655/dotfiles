@@ -114,7 +114,7 @@ _gw_create() {
   _gw_repository || return 1
   project_root=$reply[1]
   project_name=$reply[2]
-  worktree_path="$WORKTREE_ROOT/$project_name/$name"
+  worktree_path="$WORKTREE_ROOT/$project_name/$name/$project_name"
 
   [[ ! -e $worktree_path ]] || {
     print -u2 "gw: path already exists: $worktree_path"
