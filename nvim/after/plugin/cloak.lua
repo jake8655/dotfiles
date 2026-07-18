@@ -1,7 +1,5 @@
 local cloak = require 'cloak'
 
-cloak.setup {
-  cloak_telescope = true,
-}
+cloak.setup {}
 
 vim.keymap.set('n', '<leader>;', vim.cmd.CloakToggle)

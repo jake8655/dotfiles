@@ -35,25 +35,24 @@ require('lazy').setup({
 
   {
     -- Fuzzy Finder (files, lsp, etc)
-    'nvim-telescope/telescope.nvim',
+    'dmtrKovalenko/fff.nvim',
     event = 'VimEnter',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
+    build = function()
+      require('fff.download').download_or_build_binary()
+    end,
+    opts = {},
+  },
 
-      -- Fuzzy Finder Algorithm which requires local dependencies to be built.
-      -- Only load if `make` is available. Make sure you have the system
-      -- requirements installed.
-      {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        -- NOTE: If you are having trouble with this installation,
-        --       refer to the README for telescope-fzf-native for more instructions.
-        build = 'make',
-        cond = function()
-          return vim.fn.executable 'make' == 1
-        end,
+  -- fff handles files and grep; Snacks preserves the other picker workflows.
+  {
+    'folke/snacks.nvim',
+    lazy = false,
+    priority = 1000,
+    opts = {
+      picker = {
+        enabled = true,
+        ui_select = true,
       },
-
-      { 'nvim-telescope/telescope-ui-select.nvim' },
     },
   },
 
@@ -557,7 +556,6 @@ require('lazy').setup({
     dependencies = {
       -- optional dependencies:
 
-      -- 'nvim-telescope/telescope.nvim', -- for Lean-specific pickers
       -- 'andymass/vim-matchup',          -- for enhanced % motion behavior
       -- 'andrewradev/switch.vim',        -- for switch support
       -- 'tomtom/tcomment_vim',           -- for commenting
