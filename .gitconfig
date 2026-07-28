@@ -7,8 +7,8 @@
 [init]
 	defaultBranch = main
 [user]
-	email = dominik8655@gmail.com
-	name = Jake
+	email = info@dominiktoth.com
+	name = Dominik Tóth
 	signingKey = /home/jake/.ssh/id_ed25519.pub
 [commit]
 	gpgSign = true
