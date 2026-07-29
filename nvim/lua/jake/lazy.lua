@@ -70,28 +70,6 @@ require('lazy').setup({
     end,
   },
 
-  -- Miscellaneous
-  { 'ThePrimeagen/harpoon' },
-
-  {
-    'mbbill/undotree',
-    config = function()
-      vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
-    end,
-  },
-
-  -- {
-  --   'github/copilot.vim',
-  --   config = function()
-  --     vim.keymap.set('i', '<C-l>', 'copilot#Accept("\\<CR>")', {
-  --       expr = true,
-  --       replace_keycodes = false,
-  --     })
-  --     vim.g.copilot_no_tab_map = true
-  --     vim.cmd [[Copilot disable]]
-  --   end,
-  -- },
-
   -- Statusline
   {
     'nvim-lualine/lualine.nvim',
@@ -157,14 +135,6 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by blink.cmp
       'saghen/blink.cmp',
-
-      -- Crates.io utilities
-      {
-        'saecki/crates.nvim',
-        event = { 'BufRead Cargo.toml' },
-        tag = 'stable',
-        opts = {},
-      },
     },
   },
 
@@ -321,72 +291,11 @@ require('lazy').setup({
     opts = {},
   },
 
-  -- Markdown preview
-  {
-    'iamcco/markdown-preview.nvim',
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    build = 'cd app && yarn install',
-    init = function()
-      vim.g.mkdp_filetypes = { 'markdown' }
-    end,
-    ft = { 'markdown' },
-  },
-
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   -- Hide env variables
   'laytan/cloak.nvim',
-
-  -- Clipboard history
-  'royanirudd/clipboard-history.nvim',
-
-  -- Curosr.ai
-  -- {
-  --   'yetone/avante.nvim',
-  --   event = 'VeryLazy',
-  --   lazy = false,
-  --   version = false, -- set this if you want to always pull the latest change
-  --   opts = {
-  --     provider = 'copilot',
-  --   },
-  --   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-  --   build = 'make',
-  --   -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
-  --   dependencies = {
-  --     'stevearc/dressing.nvim',
-  --     'nvim-lua/plenary.nvim',
-  --     'MunifTanjim/nui.nvim',
-  --     --- The below dependencies are optional,
-  --     'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
-  --     'zbirenbaum/copilot.lua', -- for providers='copilot'
-  --     {
-  --       -- support for image pasting
-  --       'HakonHarnes/img-clip.nvim',
-  --       event = 'VeryLazy',
-  --       opts = {
-  --         -- recommended settings
-  --         default = {
-  --           embed_image_as_base64 = false,
-  --           prompt_for_file_name = false,
-  --           drag_and_drop = {
-  --             insert_mode = true,
-  --           },
-  --           -- required for Windows users
-  --           use_absolute_path = true,
-  --         },
-  --       },
-  --     },
-  --     {
-  --       -- Make sure to set this up properly if you have lazy=true
-  --       'MeanderingProgrammer/render-markdown.nvim',
-  --       opts = {
-  --         file_types = { 'markdown', 'Avante' },
-  --       },
-  --       ft = { 'markdown', 'Avante' },
-  --     },
-  --   },
-  -- },
 
   -- Merge conflicts
   { 'akinsho/git-conflict.nvim', version = '*', config = true },
@@ -473,38 +382,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>p', vim.cmd.PrevError)
       vim.keymap.set('n', '<leader>i', vim.cmd.CompileSendInput)
     end,
-  },
-
-  -- Support for lean proof-assistant language
-  {
-    'Julian/lean.nvim',
-    event = { 'BufReadPre *.lean', 'BufNewFile *.lean' },
-
-    dependencies = {
-      -- optional dependencies:
-
-      -- 'andymass/vim-matchup',          -- for enhanced % motion behavior
-      -- 'andrewradev/switch.vim',        -- for switch support
-      -- 'tomtom/tcomment_vim',           -- for commenting
-    },
-
-    ---@type lean.Config
-    opts = { -- see the manual for full configuration options
-      mappings = true,
-    },
-  },
-
-  -- Worktrees
-  {
-    'afonsofrancof/worktrees.nvim',
-    event = 'VeryLazy',
-    opts = {
-      mappings = {
-        create = '<leader>tc',
-        delete = '<leader>td',
-        switch = '<leader>ts',
-      },
-    },
   },
 
   {
