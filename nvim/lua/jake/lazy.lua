@@ -129,21 +129,6 @@ require('lazy').setup({
     'numToStr/Comment.nvim',
   },
 
-  -- Colorful background of color words
-  {
-    'catgoose/nvim-colorizer.lua',
-    event = 'BufReadPre',
-    opts = {
-      filetypes = { '*', '!python' },
-      options = {
-        parsers = {
-          css = true,
-          tailwind = { enable = true, lsp = { enable = true }, update_names = true },
-        },
-      },
-    },
-  },
-
   -- LSP Plugins
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
@@ -414,7 +399,8 @@ require('lazy').setup({
 
   -- Dired (emacs) style file manager
   {
-    'X3eRo0/dired.nvim',
+    'jake8655/dired.nvim',
+    branch = 'buffer-based-cwd',
     dependencies = { 'MunifTanjim/nui.nvim' },
     config = function()
       require('dired').setup {
@@ -424,6 +410,7 @@ require('lazy').setup({
         show_hidden = true,
         show_dot_dirs = true,
         show_colors = true,
+        override_cwd = false,
         keybinds = {
           dired_quit = '||||||',
           dired_unmark_all = 'MU',
@@ -439,13 +426,7 @@ require('lazy').setup({
 
   -- Local fork of compile-mode.nvim
   {
-    '/home/jake/Desktop/projects/compile-mode.nvim',
-    dir = '/home/jake/Desktop/projects/compile-mode.nvim',
-    dev = true,
-    -- you can just use the latest version:
-    -- branch = "latest",
-    -- or the most up-to-date updates:
-    -- branch = "nightly",
+    'jake8655/compile-mode.nvim',
     dependencies = {
       'nvim-lua/plenary.nvim',
       -- if you want to enable coloring of ANSI escape codes in
@@ -494,60 +475,6 @@ require('lazy').setup({
     end,
   },
 
-  -- Emacs-like compile mode
-  -- {
-  --   'ej-shafran/compile-mode.nvim',
-  --   version = '^5.0.0',
-  --   -- you can just use the latest version:
-  --   -- branch = "latest",
-  --   -- or the most up-to-date updates:
-  --   -- branch = "nightly",
-  --   dependencies = {
-  --     'nvim-lua/plenary.nvim',
-  --     -- if you want to enable coloring of ANSI escape codes in
-  --     -- compilation output, add:
-  --     { 'm00qek/baleia.nvim' },
-  --   },
-  --   config = function()
-  --     ---@type CompileModeOpts
-  --     vim.g.compile_mode = {
-  --       -- if you use something like `nvim-cmp` or `blink.cmp` for completion,
-  --       -- set this to fix tab completion in command mode:
-  --       input_word_completion = true,
-  --
-  --       -- to add ANSI escape code support, add:
-  --       baleia_setup = true,
-  --
-  --       -- to make `:Compile` replace special characters (e.g. `%`) in
-  --       -- the command (and behave more like `:!`), add:
-  --       bang_expansion = true,
-  --
-  --       default_command = {
-  --         python = 'uv run %',
-  --         lua = 'lua %',
-  --         javascript = 'bun %',
-  --         typescript = 'bun %',
-  --         c = 'make -k',
-  --         cpp = 'make -k',
-  --       },
-  --
-  --       auto_scroll = true,
-  --       focus_compilation_buffer = true,
-  --       use_circular_error_navigation = true,
-  --     }
-  --
-  --     vim.keymap.set('n', '<leader>j', function()
-  --       vim.cmd [[belowright Compile]]
-  --     end, { desc = 'Compile current file' })
-  --     vim.keymap.set('n', '<leader>r', function()
-  --       vim.cmd [[belowright Recompile]]
-  --     end, { desc = 'Recompile current file' })
-  --
-  --     vim.keymap.set('n', '<leader>n', vim.cmd.NextError)
-  --     vim.keymap.set('n', '<leader>p', vim.cmd.PrevError)
-  --   end,
-  -- },
-
   -- Support for lean proof-assistant language
   {
     'Julian/lean.nvim',
@@ -578,6 +505,19 @@ require('lazy').setup({
         switch = '<leader>ts',
       },
     },
+  },
+
+  {
+    'jake8655/color-tools.nvim',
+    config = function()
+      require('color-tools').setup {
+        binds = {
+          pick = '<leader>cp',
+          insert = '<leader>ci',
+          toggle = '<leader>ct',
+        },
+      }
+    end,
   },
 
   ---@diagnostic disable-next-line: missing-fields
