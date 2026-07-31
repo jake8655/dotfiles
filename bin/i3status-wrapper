@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+status_config="/home/jake/.dotfiles/i3status/config"
+computer_status="/home/jake/.dotfiles/waybar/computer-status"
+codex_cache="${XDG_CACHE_HOME:-$HOME/.cache}/i3status-codexbar.json"
+codex_ttl=300
+
+json_string() {
+  jq -Rn --arg s "$1" '$s'
+}
+
+codex_block() {
+  [[ -x "$(command -v codexbar 2>/dev/null || true)" ]] || return 0
+
+  local now cache_mtime text
+  now="$(date +%s)"
+  cache_mtime=0
+  [[ -r "$codex_cache" ]] && cache_mtime="$(stat -c %Y "$codex_cache" 2>/dev/null || printf 0)"
+
+  if (( now - cache_mtime > codex_ttl )); then
+    mkdir -p "$(dirname "$codex_cache")"
+    timeout 3 codexbar >"$codex_cache.tmp" 2>/dev/null && mv "$codex_cache.tmp" "$codex_cache" || rm -f "$codex_cache.tmp"
+  fi
+
+  [[ -r "$codex_cache" ]] || return 0
+  text="$(jq -r '.text // empty' "$codex_cache" 2>/dev/null || true)"
+  [[ -n "$text" ]] || return 0
+
+  printf '{"name":"codexbar","full_text":%s,"markup":"pango"}' "$(json_string "$text")"
+}
+
+computer_block() {
+  [[ -x "$computer_status" ]] || return 0
+
+  local text
+  text="$("$computer_status" 2>/dev/null || true)"
+  [[ -n "$text" ]] || return 0
+
+  printf '{"name":"computer_status","full_text":%s,"markup":"pango"}' "$(json_string "$text")"
+}
+
+i3status -c "$status_config" | while IFS= read -r line; do
+  case "$line" in
+    '{"version":'*|'[')
+      printf '%s\n' "$line"
+      ;;
+    *)
+      prefix=""
+      payload="$line"
+      if [[ "$payload" == ,* ]]; then
+        prefix=","
+        payload="${payload#,}"
+      fi
+
+      extra_blocks=()
+      codex="$(codex_block)"
+      computer="$(computer_block)"
+      [[ -n "${codex:-}" ]] && extra_blocks+=("$codex")
+      [[ -n "${computer:-}" ]] && extra_blocks+=("$computer")
+
+      if ((${#extra_blocks[@]} > 0)); then
+        extra_json="$(printf '%s\n' "${extra_blocks[@]}" | jq -s '.')"
+        jq -c --argjson extra "$extra_json" '$extra + .' <<<"$payload" | sed "s/^/$prefix/"
+      else
+        printf '%s\n' "$line"
+      fi
+      ;;
+  esac
+done

@@ -1,0 +1,161 @@
+set $mod Mod4
+set $term kitty
+set $menu dmenu_run
+# set $out1 DP-0
+# set $out2 DP-2
+# set $out3 HDMI-0
+
+font pango:Iosevka 10
+
+exec_always --no-startup-id xrandr --output $out1 --mode 1920x1080 --pos 0x0 --primary --output $out2 --mode 1920x1080 --right-of $out1 --output $out3 --mode 1920x1080 --right-of $out2
+exec_always --no-startup-id sh -c 'setxkbmap -layout us,sk,hu,es -variant ",qwerty,qwerty," -option "" -option caps:escape -option grp:win_space_toggle'
+exec_always --no-startup-id xset r rate 300 50
+exec_always --no-startup-id xset s off -dpms
+exec_always --no-startup-id sh -lc 'export XDG_SESSION_TYPE=x11 XDG_CURRENT_DESKTOP=i3 DESKTOP_SESSION=i3; systemctl --user unset-environment WAYLAND_DISPLAY NIRI_SOCKET HYPRLAND_INSTANCE_SIGNATURE; systemctl --user import-environment DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS XDG_SESSION_TYPE XDG_CURRENT_DESKTOP DESKTOP_SESSION; dbus-update-activation-environment --systemd DISPLAY XAUTHORITY DBUS_SESSION_BUS_ADDRESS XDG_SESSION_TYPE XDG_CURRENT_DESKTOP DESKTOP_SESSION'
+
+focus_follows_mouse yes
+mouse_warping output
+floating_modifier $mod
+tiling_drag modifier titlebar
+
+default_border normal 2
+default_floating_border normal 2
+client.focused          #285577 #285577 #ffffff #285577 #285577
+client.unfocused        #222222 #222222 #888888 #222222 #222222
+client.focused_inactive #222222 #222222 #888888 #222222 #222222
+client.urgent           #900000 #900000 #ffffff #900000 #900000
+
+exec --no-startup-id /usr/lib/polkit-kde-authentication-agent-1
+
+# Application shortcuts.
+bindsym $mod+q exec --no-startup-id $term
+bindsym $mod+c kill
+bindsym $mod+Shift+m exec "i3-nagbar -t warning -m 'Exit i3 and end this X session?' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+b exec --no-startup-id zen-browser
+bindsym $mod+d exec --no-startup-id discord
+bindsym $mod+p exec --no-startup-id spotify
+bindsym $mod+r exec --no-startup-id $menu
+
+# Tiling and floating.
+bindsym $mod+v floating toggle
+bindsym $mod+Shift+v focus mode_toggle
+bindsym $mod+f fullscreen toggle
+bindsym $mod+Shift+f fullscreen toggle
+bindsym $mod+t layout toggle split
+bindsym $mod+w layout tabbed
+bindsym $mod+s layout stacking
+
+# Manual split direction. These are the main i3-specific bindings.
+bindsym $mod+backslash split h
+bindsym $mod+minus split v
+
+# Focus movement.
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move windows.
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# Monitor focus / moving.
+bindsym $mod+Ctrl+h focus output left
+bindsym $mod+Ctrl+j focus output down
+bindsym $mod+Ctrl+k focus output up
+bindsym $mod+Ctrl+l focus output right
+bindsym $mod+Shift+Ctrl+h move container to output left
+bindsym $mod+Shift+Ctrl+j move container to output down
+bindsym $mod+Shift+Ctrl+k move container to output up
+bindsym $mod+Shift+Ctrl+l move container to output right
+
+# Direct resize bindings, matching the niri Super+Alt+H/J/K/L muscle memory.
+bindcode $mod+Mod1+43 resize shrink width 10 px or 10 ppt
+bindcode $mod+Mod1+46 resize grow width 10 px or 10 ppt
+bindcode $mod+Mod1+45 resize shrink height 10 px or 10 ppt
+bindcode $mod+Mod1+44 resize grow height 10 px or 10 ppt
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+workspace $ws1 output $out1
+workspace $ws2 output $out2
+workspace $ws3 output $out3
+
+# Workspaces.
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+bindsym $mod+u workspace prev
+bindsym $mod+i workspace next
+
+# Move focused container to workspace.
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+bindsym $mod+Shift+u move container to workspace prev
+bindsym $mod+Shift+i move container to workspace next
+
+# i3 config lifecycle.
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+
+# Utility shortcuts.
+# bindsym Ctrl+Alt+space exec --no-startup-id wofi-emoji
+bindsym $mod+Shift+s exec --no-startup-id /home/jake/.dotfiles/scripts/screenshot-x11-region
+bindsym $mod+Ctrl+p exec --no-startup-id /home/jake/.dotfiles/scripts/lock
+bindsym $mod+Shift+Ctrl+p exec --no-startup-id /home/jake/.dotfiles/scripts/sleep-pc
+
+# Media keys.
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0 && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1- && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && $refresh_i3status
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl --class=backlight set +10%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl --class=backlight set 10%-
+
+# Floating rules copied from the Wayland configs where the X11 window metadata
+# is likely to match.
+for_window [title="^(all_is_kitty)$"] floating enable
+for_window [title="^pavucontrol$"] floating enable
+for_window [class="(?i)firefox" title="^Picture-in-Picture$"] floating enable
+
+bar {
+    tray_output primary
+    status_command /home/jake/.dotfiles/bin/i3status-wrapper
+}
