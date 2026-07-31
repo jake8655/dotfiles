@@ -116,7 +116,7 @@ setopt hist_reduce_blanks
 export PATH="$HOME/.local/bin:$PATH"
 
 # Fast Node Manager (fnm)
-eval "$(fnm env --use-on-cd)"
+# eval "$(fnm env --use-on-cd)"
 
 # Cargo
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -152,3 +152,14 @@ esac
 # pnpm end
 
 export PATH="/home/jake/.local/bin:$PATH"
+
+# Vite+ bin (https://viteplus.dev)
+. "$HOME/.vite-plus/env"
+
+# Keep Codex installs and updates on the same Node toolchain. Using the explicit
+# Vite+ npm path prevents an inherited fnm PATH from receiving the update.
+codex-update() {
+  "$VP_HOME/bin/npm" install --global @openai/codex@latest &&
+    rehash &&
+    command codex --version
+}
