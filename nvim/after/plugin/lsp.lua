@@ -109,6 +109,55 @@ vim.diagnostic.config {
 --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
 local capabilities = require('blink.cmp').get_lsp_capabilities()
 
+local typescript_root_markers = { 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'bun.lockb', 'bun.lock' }
+local global_typescript_v7 = vim.fs.joinpath(vim.fn.stdpath 'data', 'typescript-v7', 'node_modules', '.bin', 'tsc')
+
+---@param bufnr integer
+---@return string?
+local function typescript_project_root(bufnr)
+  local deno_root = vim.fs.root(bufnr, { 'deno.json', 'deno.jsonc', 'deno.lock' })
+  local project_root = vim.fs.root(bufnr, { typescript_root_markers, { '.git' } })
+
+  if deno_root and (not project_root or #deno_root >= #project_root) then
+    return nil
+  end
+
+  return project_root or vim.fn.getcwd()
+end
+
+---@param root_dir string
+---@return integer?
+local function local_typescript_major(root_dir)
+  local package_json = vim.fs.joinpath(root_dir, 'node_modules', 'typescript', 'package.json')
+  if vim.fn.filereadable(package_json) == 0 then
+    return nil
+  end
+
+  local lines = vim.fn.readfile(package_json, '', 20)
+  local ok, package = pcall(vim.json.decode, table.concat(lines, '\n'))
+  if not ok or type(package.version) ~= 'string' then
+    return nil
+  end
+
+  return tonumber(package.version:match '^(%d+)')
+end
+
+---@param use_native boolean
+---@return fun(bufnr: integer, on_dir: fun(root_dir: string))
+local function typescript_root_dir(use_native)
+  return function(bufnr, on_dir)
+    local root_dir = typescript_project_root(bufnr)
+    if not root_dir then
+      return
+    end
+
+    local major = local_typescript_major(root_dir)
+    if (use_native and (not major or major >= 7)) or (not use_native and major and major < 7) then
+      on_dir(root_dir)
+    end
+  end
+end
+
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
 --
@@ -129,6 +178,7 @@ local servers = {
   yamlls = {},
   ts_ls = {
     update_in_insert = false,
+    root_dir = typescript_root_dir(false),
   },
 
   rust_analyzer = {
@@ -184,9 +234,13 @@ require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 require('mason-lspconfig').setup {
   ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
   automatic_installation = false,
-  automatic_enable = true,
+  automatic_enable = { exclude = { 'ts_ls' } },
   handlers = {
     function(server_name)
+      if server_name == 'ts_ls' then
+        return
+      end
+
       if server_name == 'biome' and utils.areFilesPresentInCWD(utils.ESLINT_CONFIG) then
         return
       end
@@ -204,6 +258,29 @@ require('mason-lspconfig').setup {
     end,
   },
 }
+
+-- TypeScript 7 is a native LSP exposed by the stable `typescript` package as
+-- `tsc --lsp --stdio`. nvim-lspconfig's `tsgo` defaults still target the old
+-- @typescript/native-preview package, so override the command during the
+-- transition. Projects on TypeScript 6 and older are handled by ts_ls above.
+servers.ts_ls.capabilities = vim.tbl_deep_extend('force', {}, capabilities, servers.ts_ls.capabilities or {})
+vim.lsp.config('ts_ls', servers.ts_ls)
+vim.lsp.enable 'ts_ls'
+
+vim.lsp.config('tsv7', {
+  capabilities = capabilities,
+  filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+  root_dir = typescript_root_dir(true),
+  cmd = function(dispatchers, config)
+    local cmd = global_typescript_v7
+    if config.root_dir and local_typescript_major(config.root_dir) then
+      cmd = vim.fs.joinpath(config.root_dir, 'node_modules', '.bin', 'tsc')
+    end
+
+    return vim.lsp.rpc.start({ cmd, '--lsp', '--stdio' }, dispatchers)
+  end,
+})
+vim.lsp.enable 'tsv7'
 
 ---@diagnostic disable-next-line: missing-fields
 require('mason').setup {
