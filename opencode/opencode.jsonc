@@ -17,6 +17,15 @@
 		}
 	},
 	"mcp": {
+		"fff": {
+			"type": "local",
+			"command": [
+				"/home/jake/.local/bin/fff-mcp",
+				"--idle-timeout-secs",
+				"28800"
+			],
+			"enabled": true
+		},
 		// "github": {
 		// 	"type": "remote",
 		// 	"url": "https://api.githubcopilot.com/mcp",
