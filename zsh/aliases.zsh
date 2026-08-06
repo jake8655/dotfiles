@@ -29,36 +29,6 @@ alias ocx="OPENCODE_EXPERIMENTAL_MARKDOWN=1 OPENCODE_EXPERIMENTAL_PLAN_MODE=1 oc
 alias ldk="lazydocker"
 alias claudex="ANTHROPIC_BASE_URL=http://127.0.0.1:8317 ANTHROPIC_AUTH_TOKEN=unused CLAUDE_CODE_SUBAGENT_MODEL=gpt-5.6-sol CLAUDE_CODE_ALWAYS_ENABLE_EFFORT=1 CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY=3 ENABLE_TOOL_SEARCH=false claude --model gpt-5.6-sol --dangerously-skip-permissions"
 
-# Browse projects
-function pj() {
-  PROJECT_DIR="$(find ~/Desktop/projects/ -maxdepth 1 -type d -exec basename {} \; | fzf)"
-  if [ -z "$PROJECT_DIR" ]; then
-    return
-  fi
-
-  if [ "$PROJECT_DIR" = "projects" ]; then
-    cd ~/Desktop/projects/
-    return
-  fi
-
-  cd ~/Desktop/projects/$PROJECT_DIR
-}
-
-# Browse school projects
-function spj() {
-  SCHOOL_PROJECT_DIR="$(find ~/Desktop/projects/school/ -maxdepth 1 -type d -exec basename {} \; | fzf)"
-  if [ -z "$SCHOOL_PROJECT_DIR" ]; then
-    return
-  fi
-
-  if [ "$SCHOOL_PROJECT_DIR" = "school" ]; then
-    cd ~/Desktop/projects/school/
-    return
-  fi
-
-  cd ~/Desktop/projects/school/$SCHOOL_PROJECT_DIR
-}
-
 function timer() {
     start="$(( $(date '+%s') + $1))"
     while [ $start -ge $(date +%s) ]; do
