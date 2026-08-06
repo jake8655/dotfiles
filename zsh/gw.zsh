@@ -77,8 +77,33 @@ _gw_list() {
 
 _gw_run_codex_setup() {
   local worktree_path=$1
+  local project_root=$2
+  local t3_file="$worktree_path/t3.json"
   local environment_file="$worktree_path/.codex/environments/environment.toml"
   local setup_script
+
+  if [[ -f $t3_file ]]; then
+    print "gw: running T3 worktree setup"
+    T3CODE_PROJECT_ROOT=$project_root T3CODE_WORKTREE_PATH=$worktree_path \
+      python3 - "$t3_file" "$worktree_path" <<'PY'
+import json
+import pathlib
+import subprocess
+import sys
+
+config = json.loads(pathlib.Path(sys.argv[1]).read_text())
+for script in config.get("scripts", []):
+    if script.get("runOnWorktreeCreate") and script.get("command"):
+        subprocess.run(
+            script["command"],
+            cwd=sys.argv[2],
+            shell=True,
+            executable="/bin/bash",
+            check=True,
+        )
+PY
+    return $?
+  fi
 
   [[ -f $environment_file ]] || return 0
 
@@ -124,7 +149,7 @@ _gw_create() {
   mkdir -p "${worktree_path:h}" || return 1
   git worktree add -b "$name" "$worktree_path" || return 1
 
-  if ! _gw_run_codex_setup "$worktree_path"; then
+  if ! _gw_run_codex_setup "$worktree_path" "$project_root"; then
     print -u2 "gw: worktree was created, but its Codex setup failed: $worktree_path"
     return 1
   fi
