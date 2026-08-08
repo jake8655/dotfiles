@@ -134,8 +134,16 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# ssh keychain
-eval $(keychain --eval --quiet id_ed25519)
+# Use the systemd-managed OpenSSH agent for local shells. Load the key once
+# when entering a local login shell; subsequent shells reuse the same agent.
+if [[ -z $SSH_CONNECTION ]]; then
+  export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+  unset SSH_AGENT_PID
+
+  if [[ -o login ]] && ! ssh-add -T "$HOME/.ssh/id_ed25519.pub" >/dev/null 2>&1; then
+    ssh-add "$HOME/.ssh/id_ed25519"
+  fi
+fi
 
 # Cursor CLI
 export PATH="$HOME/.local/bin:$PATH"
