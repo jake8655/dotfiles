@@ -1,0 +1,7 @@
+interface:
+  display_name: "Deslopify"
+  short_description: "Polish products into clear UX"
+  default_prompt: "Use $deslopify to make this product feel intentional."
+
+policy:
+  allow_implicit_invocation: false
