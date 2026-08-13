@@ -14,5 +14,3 @@ Inspect the branch, diff, and commits before writing the PR. Push the branch if 
 - For significant visual changes, capture a screenshot or short video. Use T3 Code's built-in browser recording for browser videos, then upload the result with `file-host upload <path>`.
 
 Embed an uploaded image with `![Description](URL)`. GitHub does not embed externally hosted video, so link it through an uploaded preview image with `[![Video preview](IMAGE_URL)](VIDEO_URL)`. If GitHub provides its own video asset URL, place that URL on its own line.
-
-Create the PR with `gh pr create` and return its URL.
