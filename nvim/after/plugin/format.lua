@@ -19,15 +19,6 @@ local formatters_by_ft = {
   toml = { 'taplo' },
   gdscript = { 'gdformat' },
   java = { 'google-java-format' },
-  html = { 'oxfmt' },
-  css = { 'oxfmt' },
-  json = { 'oxfmt' },
-  jsonc = { 'oxfmt' },
-  javascript = { 'oxfmt' },
-  javascriptreact = { 'oxfmt' },
-  typescript = { 'oxfmt' },
-  typescriptreact = { 'oxfmt' },
-  astro = { 'oxfmt' },
   cs = { 'csharpier' },
   -- ['*'] = { 'codespell' },
   ['_'] = { 'trim_whitespace' },
@@ -38,13 +29,27 @@ local formatters_by_ft = {
   -- javascript = { "prettierd", "prettier", stop_after_first = true },
 }
 
-if utils.areFilesPresentInCWD(utils.PRETTIER_CONFIG) then
-  formatters_by_ft.javascript = { 'prettierd' }
-  formatters_by_ft.javascriptreact = { 'prettierd' }
-  formatters_by_ft.typescript = { 'prettierd' }
-  formatters_by_ft.typescriptreact = { 'prettierd' }
-  formatters_by_ft.html = { 'prettierd' }
-  formatters_by_ft.css = { 'prettierd' }
+---@param bufnr integer
+---@return string[]
+local function web_formatters(bufnr)
+  if utils.webToolchain(bufnr) == 'ox' then
+    return { 'oxfmt' }
+  end
+  return { 'biome-check' }
+end
+
+for _, filetype in ipairs {
+  'html',
+  'css',
+  'json',
+  'jsonc',
+  'javascript',
+  'javascriptreact',
+  'typescript',
+  'typescriptreact',
+  'astro',
+} do
+  formatters_by_ft[filetype] = web_formatters
 end
 
 local conform = require 'conform'
@@ -73,6 +78,12 @@ conform.setup {
   end,
 
   formatters_by_ft = formatters_by_ft,
+
+  formatters = {
+    ['biome-check'] = {
+      append_args = { '--unsafe' },
+    },
+  },
 }
 
 vim.api.nvim_create_user_command('FormatDisable', function(args)

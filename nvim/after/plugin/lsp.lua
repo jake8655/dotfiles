@@ -170,12 +170,26 @@ end
 local servers = {
   astro = {},
   bashls = {},
+  biome = {
+    root_dir = function(bufnr, on_dir)
+      if utils.webToolchain(bufnr) == 'biome' then
+        on_dir(utils.webProjectRoot(bufnr))
+      end
+    end,
+  },
   cssls = {},
   dockerls = {},
   jsonls = {},
   pyright = {},
   tailwindcss = {},
   yamlls = {},
+  oxlint = {
+    root_dir = function(bufnr, on_dir)
+      if utils.webToolchain(bufnr) == 'ox' then
+        on_dir(utils.webProjectRoot(bufnr))
+      end
+    end,
+  },
   ts_ls = {
     update_in_insert = false,
     root_dir = typescript_root_dir(false),
@@ -232,32 +246,17 @@ vim.list_extend(ensure_installed, {
 require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
 require('mason-lspconfig').setup {
-  ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-  automatic_installation = false,
-  automatic_enable = { exclude = { 'ts_ls' } },
-  handlers = {
-    function(server_name)
-      if server_name == 'ts_ls' then
-        return
-      end
-
-      if server_name == 'biome' and utils.areFilesPresentInCWD(utils.ESLINT_CONFIG) then
-        return
-      end
-
-      if server_name == 'eslint' and not utils.areFilesPresentInCWD(utils.ESLINT_CONFIG) then
-        return
-      end
-
-      local server = servers[server_name] or {}
-      -- This handles overriding only values explicitly passed
-      -- by the server configuration above. Useful when disabling
-      -- certain features of an LSP (for example, turning off formatting for ts_ls)
-      server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-      require('lspconfig')[server_name].setup(server)
-    end,
-  },
+  ensure_installed = {}, -- mason-tool-installer owns installation above
+  automatic_enable = false,
 }
+
+for server_name, server in pairs(servers) do
+  if server_name ~= 'ts_ls' then
+    server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+    vim.lsp.config(server_name, server)
+    vim.lsp.enable(server_name)
+  end
+end
 
 -- TypeScript 7 is a native LSP exposed by the stable `typescript` package as
 -- `tsc --lsp --stdio`. nvim-lspconfig's `tsgo` defaults still target the old
