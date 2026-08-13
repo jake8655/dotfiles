@@ -30,10 +30,13 @@ local formatters_by_ft = {
 }
 
 ---@param bufnr integer
----@return string[]
+---@return conform.FiletypeFormatter
 local function web_formatters(bufnr)
   if utils.webToolchain(bufnr) == 'ox' then
-    return { 'oxfmt' }
+    return {
+      lsp_format = 'prefer',
+      name = 'oxfmt',
+    }
   end
   return { 'biome-check' }
 end
@@ -56,6 +59,9 @@ local conform = require 'conform'
 
 conform.setup {
   notify_on_error = false,
+  default_format_opts = {
+    lsp_format = 'fallback',
+  },
   format_on_save = function(bufnr)
     -- Disable "format_on_save lsp_fallback" for languages that don't
     -- have a well standardized coding style. You can add additional
@@ -72,8 +78,7 @@ conform.setup {
     end
 
     return {
-      timeout_ms = 500,
-      lsp_format = 'fallback',
+      timeout_ms = 2000,
     }
   end,
 

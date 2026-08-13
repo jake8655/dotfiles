@@ -190,6 +190,13 @@ local servers = {
       end
     end,
   },
+  oxfmt = {
+    root_dir = function(bufnr, on_dir)
+      if utils.webToolchain(bufnr) == 'ox' then
+        on_dir(utils.webProjectRoot(bufnr))
+      end
+    end,
+  },
   ts_ls = {
     update_in_insert = false,
     root_dir = typescript_root_dir(false),
