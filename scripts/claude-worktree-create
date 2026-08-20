@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+config_file=${WORKTREE_CONFIG_FILE:-"$script_dir/../config/worktrees.sh"}
+
+if [[ ! -f $config_file ]]; then
+    printf 'claude-worktree-create: config not found: %s\n' "$config_file" >&2
+    exit 1
+fi
+
+# shellcheck source=../config/worktrees.sh
+source "$config_file"
+
+input=$(cat)
+cwd=$(jq -r '.cwd // empty' <<<"$input")
+name=$(jq -r '.name // empty' <<<"$input")
+
+[[ -n $cwd && -n $name ]] || {
+    printf 'claude-worktree-create: missing cwd or name\n' >&2
+    exit 1
+}
+
+[[ $name != */* && $name != . && $name != .. ]] || {
+    printf 'claude-worktree-create: invalid worktree name: %s\n' "$name" >&2
+    exit 1
+}
+
+common_dir=$(git -C "$cwd" rev-parse --path-format=absolute --git-common-dir)
+project_root=${common_dir%/.git}
+project_name=${project_root##*/}
+worktree_path="$CLAUDE_WORKTREE_ROOT/$name/$project_name"
+branch="worktree-$name"
+
+git check-ref-format --branch "$branch" >/dev/null || {
+    printf 'claude-worktree-create: invalid branch name: %s\n' "$branch" >&2
+    exit 1
+}
+
+if [[ -e $worktree_path ]]; then
+    if git -C "$worktree_path" rev-parse --show-toplevel >/dev/null 2>&1; then
+        printf '%s\n' "$worktree_path"
+        exit 0
+    fi
+
+    printf 'claude-worktree-create: path already exists and is not a Git worktree: %s\n' "$worktree_path" >&2
+    exit 1
+fi
+
+mkdir -p "${worktree_path%/*}"
+
+base_ref=$(git -C "$project_root" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)
+base_ref=${base_ref:-HEAD}
+
+git -C "$project_root" worktree add -b "$branch" "$worktree_path" "$base_ref" >&2
+printf '%s\n' "$worktree_path"

@@ -14,7 +14,12 @@ source "$config_file"
 list_candidates() {
     local dir
     local -a search_roots=("${SESSIONIZER_SEARCH_ROOTS[@]}")
-    local -a worktree_roots=("$WORKTREE_ROOT" "$CODEX_WORKTREE_ROOT")
+    local -a worktree_roots=(
+        "$WORKTREE_ROOT"
+        "$CODEX_WORKTREE_ROOT"
+        "$CLAUDE_WORKTREE_ROOT"
+        "$T3CODE_WORKTREE_ROOT"
+    )
 
     # Keep the existing project directories in the picker.
     find "${search_roots[@]}" -mindepth 1 -maxdepth 1 -type d 2> /dev/null
@@ -35,33 +40,56 @@ list_candidates() {
 
 git_identity() {
     local path=$1
-    local root branch
+    local common_dir project_root branch
 
-    root=$(git -C "$path" rev-parse --show-toplevel 2> /dev/null) || return 1
+    common_dir=$(git -C "$path" rev-parse --path-format=absolute --git-common-dir 2> /dev/null) || return 1
+    project_root=${common_dir%/.git}
     branch=$(git -C "$path" symbolic-ref --quiet --short HEAD 2> /dev/null) \
         || branch=$(git -C "$path" rev-parse --short HEAD 2> /dev/null) \
         || return 1
 
-    printf '%s\t%s\n' "$(basename "$root")" "$branch"
+    printf '%s\t%s\n' "$(basename "$project_root")" "$branch"
 }
 
-codex_worktree_id() {
+worktree_info() {
     local path=$1
-    local relative=${path#"$CODEX_WORKTREE_ROOT/"}
+    local relative
 
-    [[ $relative != "$path" && $relative == */* ]] || return 1
-    printf '%s\n' "${relative%%/*}"
+    relative=${path#"$CODEX_WORKTREE_ROOT/"}
+    if [[ $relative != "$path" && $relative == */* ]]; then
+        printf 'codex\t%s\n' "${relative%%/*}"
+        return 0
+    fi
+
+    relative=${path#"$T3CODE_WORKTREE_ROOT/"}
+    if [[ $relative != "$path" && $relative == */* && ${relative##*/} == t3code-* ]]; then
+        printf 't3code\t%s\n' "${relative##*/t3code-}"
+        return 0
+    fi
+
+    relative=${path#"$CLAUDE_WORKTREE_ROOT/"}
+    if [[ $relative != "$path" && $relative == */* && $relative != */*/* ]]; then
+        printf 'claude\t%s\n' "${relative%%/*}"
+        return 0
+    fi
+
+    return 1
 }
 
 format_candidate() {
     local path=$1
-    local identity repo branch codex_id
+    local identity repo branch worktree_provider worktree_id worktree_metadata
 
     if identity=$(git_identity "$path"); then
         repo=${identity%%$'\t'*}
         branch=${identity#*$'\t'}
-        if codex_id=$(codex_worktree_id "$path"); then
-            printf '%s\t%s--%s\t%s\n' "$repo" "${branch#codex/}" "$codex_id" "$path"
+        if worktree_metadata=$(worktree_info "$path"); then
+            worktree_provider=${worktree_metadata%%$'\t'*}
+            worktree_id=${worktree_metadata#*$'\t'}
+            case $worktree_provider in
+                codex|t3code) branch=${branch#"$worktree_provider/"} ;;
+            esac
+            printf '%s\t%s--%s\t%s\n' "$repo" "$branch" "$worktree_id" "$path"
         else
             printf '%s\t%s\t%s\n' "$repo" "$branch" "$path"
         fi
@@ -100,10 +128,18 @@ set_session_metadata() {
         tmux set-option -qu -t "$selected_name" @git_branch
     fi
 
-    if [[ -n $codex_id ]]; then
-        tmux set-option -q -t "$selected_name" @codex_id "$codex_id"
+    # Clear the old provider-specific option left by older sessionizer
+    # versions, then expose one provider/ID pair for all worktree tools.
+    tmux set-option -qu -t "$selected_name" @codex_id
+    tmux set-option -qu -t "$selected_name" @t3code_id
+    tmux set-option -qu -t "$selected_name" @claude_id
+
+    if [[ -n $worktree_id ]]; then
+        tmux set-option -q -t "$selected_name" @worktree_provider "$worktree_provider"
+        tmux set-option -q -t "$selected_name" @worktree_id "$worktree_id"
     else
-        tmux set-option -qu -t "$selected_name" @codex_id
+        tmux set-option -qu -t "$selected_name" @worktree_provider
+        tmux set-option -qu -t "$selected_name" @worktree_id
     fi
 }
 
@@ -122,14 +158,19 @@ fi
 
 repo=''
 branch=''
-codex_id=''
+worktree_provider=''
+worktree_id=''
 
 if identity=$(git_identity "$selected"); then
     repo=${identity%%$'\t'*}
     branch=${identity#*$'\t'}
-    if codex_id=$(codex_worktree_id "$selected"); then
-        branch=${branch#codex/}
-        selected_name="$(session_component "$repo")--$(session_component "$branch")--$(session_component "$codex_id")"
+    if worktree_metadata=$(worktree_info "$selected"); then
+        worktree_provider=${worktree_metadata%%$'\t'*}
+        worktree_id=${worktree_metadata#*$'\t'}
+        case $worktree_provider in
+            codex|t3code) branch=${branch#"$worktree_provider/"} ;;
+        esac
+        selected_name="$(session_component "$repo")--$(session_component "$branch")--$(session_component "$worktree_id")"
     else
         selected_name="$(session_component "$repo")--$(session_component "$branch")"
     fi
