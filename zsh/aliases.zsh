@@ -24,8 +24,7 @@ alias bm="bluetoothctl connect 94:F6:D6:B6:6B:42"
 alias dbm="bluetoothctl disconnect"
 alias gdvim="nvim --listen ~/.cache/nvim/godot.pipe"
 alias glg="g lg"
-alias oc="opencode"
-alias ocx="OPENCODE_EXPERIMENTAL_MARKDOWN=1 OPENCODE_EXPERIMENTAL_PLAN_MODE=1 oc"
+alias oc="opencode2"
 alias ldk="lazydocker"
 function claudex() {
   ANTHROPIC_BASE_URL=http://127.0.0.1:8317 \

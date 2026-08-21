@@ -171,3 +171,6 @@ codex-update() {
     rehash &&
     command codex --version
 }
+
+# opencode
+export PATH=/home/jake/.opencode/bin:$PATH
