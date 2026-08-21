@@ -1,4 +1,4 @@
-@/home/jake/.dotfiles/AGENTS.md
+@/home/jake/.dotfiles/.agents/AGENTS.md
 
 # Agent orchestration (Subagents and workflows)
 opus   = gpt-5.6-sol
