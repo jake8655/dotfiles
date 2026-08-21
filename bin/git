@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+real_git=${GIT_SHIM_REAL_GIT:-/usr/bin/git}
+cow_worktree=${GIT_COW_WORKTREE_BIN:-"$HOME/go/bin/git-cow-worktree"}
+
+# git-cow-worktree shells out to `git` for its plumbing. Bypass the shim for
+# those child commands so its internal `git worktree add --no-checkout` does
+# not recurse back into git-cow-worktree.
+parent_exe=$(readlink -f "/proc/$PPID/exe" 2>/dev/null || true)
+if [[ ${GIT_COW_WORKTREE_SHIM_ACTIVE:-0} == 1 || ${parent_exe##*/} == git-cow-worktree ]]; then
+  exec "$real_git" "$@"
+fi
+
+args=("$@")
+git_context=()
+index=0
+
+# Worktree creators commonly use `git -C <repo> worktree add`. Preserve any
+# chained -C options when resolving the repository in which the CoW helper
+# should run. Unknown global Git options retain normal Git behavior.
+while ((index < ${#args[@]})); do
+  case ${args[index]} in
+    -C)
+      ((index + 1 < ${#args[@]})) || exec "$real_git" "$@"
+      git_context+=("-C" "${args[index + 1]}")
+      index=$((index + 2))
+      ;;
+    -C?*)
+      git_context+=("-C" "${args[index]#-C}")
+      index=$((index + 1))
+      ;;
+    --no-pager|-P)
+      index=$((index + 1))
+      ;;
+    -*)
+      exec "$real_git" "$@"
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+command_name=${args[index]:-}
+
+# Explicit `git cow-worktree add` calls must also guard the helper's child Git
+# processes from re-entering this shim.
+if [[ $command_name == cow-worktree ]]; then
+  GIT_COW_WORKTREE_SHIM_ACTIVE=1 exec "$real_git" "$@"
+fi
+
+if [[ $command_name != worktree || ${args[index + 1]:-} != add ]]; then
+  exec "$real_git" "$@"
+fi
+
+if [[ ! -x $cow_worktree ]]; then
+  printf 'git shim: git-cow-worktree is not executable: %s\n' "$cow_worktree" >&2
+  exit 127
+fi
+
+repo_dir=$("$real_git" "${git_context[@]}" rev-parse --show-toplevel 2>/dev/null || true)
+if [[ -z $repo_dir ]]; then
+  repo_dir=$("$real_git" "${git_context[@]}" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)
+fi
+
+# Let real Git produce its usual error outside a repository.
+if [[ -z $repo_dir || ! -d $repo_dir ]]; then
+  exec "$real_git" "$@"
+fi
+
+cd -- "$repo_dir"
+worktree_args=("${args[@]:index + 2}")
+
+if [[ ${GIT_COW_WORKTREE_VERBOSE:-0} == 1 ]]; then
+  worktree_args=(-v "${worktree_args[@]}")
+fi
+
+GIT_COW_WORKTREE_SHIM_ACTIVE=1 exec "$cow_worktree" add "${worktree_args[@]}"
