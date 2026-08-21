@@ -11,6 +11,9 @@ fi
 # shellcheck source=../config/worktrees.sh
 source "$config_file"
 
+cache_dir=${XDG_CACHE_HOME:-"$HOME/.cache"}/tmux-sessionizer
+cache_file=$cache_dir/candidates
+
 list_candidates() {
     local dir
     local -a search_roots=("${SESSIONIZER_SEARCH_ROOTS[@]}")
@@ -119,6 +122,30 @@ session_component() {
     printf '%s' "$1" | tr '/.' '-_' | sed 's/[^[:alnum:]_-]/-/g'
 }
 
+generate_cache() {
+    local tmp
+    mkdir -p "$cache_dir"
+    tmp=$(mktemp "$cache_dir/.candidates.XXXXXX")
+
+    # format_candidate runs in parallel subshells, so ship the helpers and
+    # worktree roots they rely on to each worker.
+    export -f git_identity worktree_info format_candidate
+    export CODEX_WORKTREE_ROOT CLAUDE_WORKTREE_ROOT T3CODE_WORKTREE_ROOT
+
+    list_candidates | awk '!seen[$0]++' \
+        | xargs -d '\n' -P "${SESSIONIZER_JOBS:-8}" -n 1 \
+            bash -c 'format_candidate "$@"' _ \
+        | align_candidates > "$tmp"
+
+    mv -f "$tmp" "$cache_file"
+}
+
+# Internal mode: rebuild the candidate cache, then exit.
+if [[ ${1:-} == --refresh-cache ]]; then
+    generate_cache
+    exit 0
+fi
+
 set_session_metadata() {
     tmux set-option -q -t "$selected_name" @project_name "$repo"
 
@@ -145,15 +172,49 @@ set_session_metadata() {
 
 if [[ $# -eq 1 ]]; then
     selected=$1
+    # Keep the cache warm on direct jumps so the next picker open is instant.
+    "$script_dir/${BASH_SOURCE[0]##*/}" --refresh-cache > /dev/null 2>&1 &
+    disown
 else
-    selected=$(while IFS= read -r path; do
-        format_candidate "$path"
-    done < <(list_candidates | awk '!seen[$0]++') | align_candidates | fzf --delimiter=$'\t' --with-nth=1)
+    if [[ -s $cache_file ]]; then
+        # Serve the cached list instantly, then stream the refreshed list into
+        # the still-running picker; the dedup only lets new entries through.
+        # The feeder lives in a FIFO so a fast selection isn't delayed by the
+        # refresh: fzf exits on Enter without waiting for EOF, and we kill the
+        # feeder right after.
+        fifo_dir=$(mktemp -d)
+        mkfifo "$fifo_dir/candidates"
+        {
+            {
+                cat "$cache_file"
+                "$script_dir/${BASH_SOURCE[0]##*/}" --refresh-cache
+                cat "$cache_file"
+            } | awk '!seen[$0]++'
+        } > "$fifo_dir/candidates" &
+        cache_feeder=$!
+
+        selected=$(fzf --delimiter=$'\t' --with-nth=1 < "$fifo_dir/candidates")
+
+        kill "$cache_feeder" 2> /dev/null
+        wait "$cache_feeder" 2> /dev/null
+        rm -rf "$fifo_dir"
+    else
+        # First run (or wiped cache): build it once up front.
+        generate_cache
+        selected=$(fzf --delimiter=$'\t' --with-nth=1 < "$cache_file")
+    fi
     selected=${selected##*$'\t'}
 fi
 
 if [[ -z $selected ]]; then
     exit 0
+fi
+
+# A cached entry can go stale if the worktree was removed since the refresh.
+if [[ ! -d $selected ]]; then
+    printf 'tmux-sessionizer: %s no longer exists, refreshing cache\n' "$selected" >&2
+    generate_cache
+    exit 1
 fi
 
 repo=''
