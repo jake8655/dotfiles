@@ -78,7 +78,7 @@ _gw_list() {
 _gw_run_codex_setup() {
   local worktree_path=$1
   local project_root=$2
-  local t3_file="$worktree_path/t3.json"
+  local t3_file="$project_root/t3.json"
   local environment_file="$worktree_path/.codex/environments/environment.toml"
   local setup_script
 
