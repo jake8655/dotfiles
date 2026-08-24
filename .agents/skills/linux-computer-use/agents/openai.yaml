@@ -1,0 +1,3 @@
+interface:
+  display_name: "Linux Computer Use"
+  short_description: "Control the real host Linux desktop"
