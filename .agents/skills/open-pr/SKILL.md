@@ -7,6 +7,7 @@ description: Open a GitHub pull request for the current branch. Use when asked t
 
 Inspect the branch, diff, and commits before writing the PR. Push the branch if needed.
 
+- If not yet commited, feel free to break up the diff into multiple smaller atomic commits
 - Use a Conventional Commit title: `type(scope): summary`.
 - Keep the body brief and use simple language.
 - Explain the problem and how the PR fixes it. Focus on the outcome, not implementation details or a list of files.
