@@ -24,28 +24,46 @@ while true; do
     band="ok"
 
     if [[ "$status" == "Discharging" ]]; then
-        if (( capacity <= 5 )); then
-            band="5"
-        elif (( capacity <= 10 )); then
-            band="10"
+        if (( capacity <= 15 )); then
+            band="15"
         elif (( capacity <= 20 )); then
             band="20"
+        elif (( capacity <= 25 )); then
+            band="25"
+        elif (( capacity <= 30 )); then
+            band="30"
+        elif (( capacity <= 40 )); then
+            band="40"
+        elif (( capacity <= 50 )); then
+            band="50"
         fi
     fi
 
     if [[ "$band" != "$previous_band" ]]; then
         case "$band" in
-            20)
+            50)
+                notify-send -u normal -i battery-good \
+                    "Battery at 50%" "Battery is at ${capacity}%."
+                ;;
+            40)
+                notify-send -u normal -i battery-good \
+                    "Battery at 40%" "Battery is at ${capacity}%."
+                ;;
+            30)
                 notify-send -u normal -i battery-low \
-                    "Battery low" "Battery is at ${capacity}% (20% threshold)."
+                    "Battery at 30%" "Battery is at ${capacity}%."
                 ;;
-            10)
+            25)
+                notify-send -u normal -i battery-low \
+                    "Battery at 25%" "Battery is at ${capacity}%."
+                ;;
+            20)
                 notify-send -u critical -i battery-caution \
-                    "Battery very low" "Battery is at ${capacity}% (10% threshold). Connect the charger."
+                    "Battery low" "Battery is at ${capacity}%. Connect the charger."
                 ;;
-            5)
-                notify-send -u critical -i battery-empty \
-                    "Battery critical" "Battery is at ${capacity}% (5% threshold). Connect the charger now."
+            15)
+                notify-send -u critical -i battery-caution \
+                    "Battery very low" "Battery is at ${capacity}%. Hibernation starts at 10%."
                 ;;
         esac
     fi
