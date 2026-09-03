@@ -7,7 +7,14 @@
   "exclusive": true,
   "modules-left": ["niri/workspaces", "niri/window"],
   "modules-center": [],
-  "modules-right": ["custom/codexbar", "custom/wallpaper", "custom/power-profile", "pulseaudio", "custom/computer-status", "tray"],
+  "modules-right": [
+    "custom/codexbar",
+    "custom/wallpaper",
+    "custom/power-profile",
+    "pulseaudio",
+    "custom/computer-status",
+    "tray"
+  ],
   "niri/workspaces": {
     "format": "{value}",
     "disable-scroll": true
@@ -20,7 +27,7 @@
   "custom/computer-status": {
     "exec": "/home/jake/.dotfiles/waybar/computer-status",
     "format": "{}",
-    "interval": 5,
+    "interval": 0,
     "tooltip": false,
     "escape": false
   },
