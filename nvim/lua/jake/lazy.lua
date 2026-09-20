@@ -397,6 +397,8 @@ require('lazy').setup({
     end,
   },
 
+  { 'mfussenegger/nvim-lint', event = { 'BufReadPost', 'BufWritePost' } },
+
   ---@diagnostic disable-next-line: missing-fields
 }, {
   ui = { border = 'rounded' },
