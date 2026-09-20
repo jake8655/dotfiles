@@ -174,3 +174,6 @@ codex-update() {
 
 # opencode
 export PATH=/home/jake/.opencode/bin:$PATH
+
+# GHC
+export PATH="$HOME/.ghcup/bin:$PATH"

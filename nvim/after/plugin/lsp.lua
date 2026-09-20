@@ -179,6 +179,31 @@ local servers = {
   },
   cssls = {},
   dockerls = {},
+  hls = {
+    filetypes = { 'haskell', 'lhaskell', 'cabal' },
+    -- Default nvim-lspconfig root_dir returns nil when there is no
+    -- hie.yaml / stack.yaml / cabal.project / *.cabal, which prevents HLS
+    -- from starting at all on single-file school exercises. Fall back to
+    -- the file's directory so implicit-cradle mode still works.
+    root_dir = function(bufnr, on_dir)
+      local util = require 'lspconfig.util'
+      local fname = vim.api.nvim_buf_get_name(bufnr)
+      local root = util.root_pattern('hie.yaml', 'stack.yaml', 'cabal.project', '*.cabal', 'package.yaml')(fname) or vim.fs.root(bufnr, '.git')
+      if not root or root == '' then
+        root = fname ~= '' and vim.fs.dirname(fname) or vim.fn.getcwd()
+      end
+      on_dir(root)
+    end,
+    settings = {
+      haskell = {
+        formattingProvider = 'fourmolu',
+        cabalFormattingProvider = 'cabal-fmt',
+        plugin = {
+          semanticTokens = { globalOn = true },
+        },
+      },
+    },
+  },
   jsonls = {},
   pyright = {},
   tailwindcss = {},
@@ -249,6 +274,7 @@ local servers = {
 local ensure_installed = vim.tbl_keys(servers or {})
 vim.list_extend(ensure_installed, {
   'stylua', -- Used to format Lua code
+  'fourmolu', -- Haskell formatter (also HLS formattingProvider above)
 })
 require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 

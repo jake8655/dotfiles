@@ -2,7 +2,7 @@ require('nvim-treesitter').setup {
   install_dir = vim.fn.stdpath 'data' .. '/site',
 }
 
-require('nvim-treesitter').install { 'javascript', 'typescript', 'tsx', 'c', 'lua', 'vim', 'rust', 'diff' }
+require('nvim-treesitter').install { 'javascript', 'typescript', 'tsx', 'c', 'lua', 'vim', 'rust', 'diff', 'haskell' }
 
 require('nvim-treesitter-textobjects').setup {
   select = {
@@ -14,10 +14,15 @@ require('nvim-treesitter-textobjects').setup {
 }
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'javascript', 'typescript', 'tsx', 'c', 'lua', 'vim', 'rust', 'diff' },
+  pattern = { 'javascript', 'typescript', 'tsx', 'c', 'lua', 'vim', 'rust', 'diff', 'haskell' },
   callback = function(ev)
     vim.treesitter.start(ev.buf)
-    vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    -- Haskell ships no treesitter indent queries and its layout rule
+    -- (do/where/let/of) is broken by C-style indents, so don't set
+    -- treesitter indentexpr here. See after/ftplugin/haskell.lua.
+    if vim.bo[ev.buf].filetype ~= 'haskell' then
+      vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end
   end,
 })
 
