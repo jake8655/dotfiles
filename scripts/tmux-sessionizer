@@ -25,13 +25,13 @@ list_candidates() {
     )
 
     # Keep the existing project directories in the picker.
-    find "${search_roots[@]}" -mindepth 1 -maxdepth 1 -type d 2> /dev/null
+    find "${search_roots[@]}" -mindepth 1 -maxdepth 1 -name .git -prune -o -type d -print 2> /dev/null
 
     # Add every worktree belonging to repositories found in those directories.
     while IFS= read -r dir; do
         git -C "$dir" worktree list --porcelain 2> /dev/null \
             | sed -n 's/^worktree //p'
-    done < <(find "${search_roots[@]}" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)
+    done < <(find "${search_roots[@]}" -mindepth 1 -maxdepth 1 -name .git -prune -o -type d -print 2> /dev/null)
 
     # Also include sibling worktrees when invoked from inside any Git repository.
     git worktree list --porcelain 2> /dev/null | sed -n 's/^worktree //p'
@@ -43,7 +43,7 @@ list_candidates() {
 
 git_identity() {
     local path=$1
-    local common_dir project_root branch
+    local common_dir project_root branch name
 
     common_dir=$(git -C "$path" rev-parse --path-format=absolute --git-common-dir 2> /dev/null) || return 1
     project_root=${common_dir%/.git}
@@ -51,7 +51,15 @@ git_identity() {
         || branch=$(git -C "$path" rev-parse --short HEAD 2> /dev/null) \
         || return 1
 
-    printf '%s\t%s\n' "$(basename "$project_root")" "$branch"
+    # A candidate inside a repo (e.g. ~/School/IB015) should display as
+    # its own directory, not the enclosing git root (School).
+    if [[ $path != "$project_root" && $path == "$project_root"/* ]]; then
+        name=$(basename "$path")
+    else
+        name=$(basename "$project_root")
+    fi
+
+    printf '%s\t%s\n' "$name" "$branch"
 }
 
 worktree_info() {
