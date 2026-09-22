@@ -17,6 +17,12 @@ cursor {
   xcursor-size 24
 }
 
+gestures {
+    hot-corners {
+        off
+    }
+}
+
 input {
     keyboard {
         xkb {
@@ -101,7 +107,7 @@ blur {
 }
 
 animations {
-    off
+    slowdown 0.25
 }
 
 // Prefer no client-side decorations
