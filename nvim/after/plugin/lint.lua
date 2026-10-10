@@ -86,6 +86,7 @@ dmypy.args = {
   '--no-color-output',
   '--no-error-summary',
   '--no-pretty',
+  '--strict',
   '--python-executable',
   function()
     return vim.fn.exepath 'python3' or vim.fn.exepath 'python'
