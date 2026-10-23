@@ -4,3 +4,5 @@ Do NOT write tests or think about backwards compatibility at all unless the user
 If I mention vps or tell you to use vps, you can access it using `ssh vps`.
 
 When something doesnt work, dont add a fallback, fix the underlying issue.
+
+Do NOT format code manually, run the appropriate formatter. Also auto-fix linter issues where possible and it makes sense.
