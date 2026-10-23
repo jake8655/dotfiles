@@ -38,5 +38,6 @@
   "snacks.nvim": { "branch": "main", "commit": "882c996cf28183f4d63640de0b4c02ec886d01f2" },
   "tagalong.vim": { "branch": "main", "commit": "979d2f3b204ca594af8a7c644c45a3eda84dccd4" },
   "todo-comments.nvim": { "branch": "main", "commit": "31e3c38ce9b29781e4422fc0322eb0a21f4e8668" },
+  "vim-haskell-indent": { "branch": "master", "commit": "47d3e88aff898b360e6f8872394631847c0b4adc" },
   "vim-surround": { "branch": "master", "commit": "3d188ed2113431cf8dac77be61b842acb64433d9" }
 }

@@ -28,9 +28,9 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.treesitter.start(ev.buf)
 
     -- Treesitter indentation is experimental and needs the language's
-    -- `indents.scm`. Haskell, Vim and diff don't ship one; Haskell's layout
-    -- rule (do/where/let/of) also shouldn't get C-style indents, so keep the
-    -- filetype's own settings. See after/ftplugin/haskell.lua.
+    -- `indents.scm`. Haskell, Vim and diff don't ship one, so keep the
+    -- filetype's own indent settings. Haskell gets its indentexpr from
+    -- vim-haskell-indent. See after/ftplugin/haskell.lua.
     if vim.treesitter.query.get(parser:lang(), 'indents') then
       vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     end

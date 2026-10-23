@@ -7,8 +7,12 @@ vim.bo.softtabstop = 4
 vim.bo.shiftwidth = 4
 
 -- smartindent is C-style and actively breaks Haskell layout.
--- There is no bundled indent/haskell.vim and no treesitter indents.scm
--- for Haskell, so rely on manual layout + fourmolu (:ConformInfo / <leader>h).
+-- Neovim ships no indent/haskell.vim and Treesitter has no Haskell
+-- indents.scm, so vim-haskell-indent supplies indentexpr. fourmolu still owns
+-- whole-file layout on save (:ConformInfo / <leader>h).
 vim.bo.smartindent = false
 vim.bo.autoindent = true
-vim.bo.indentexpr = ''
+
+-- Indent case alternatives by one shiftwidth (fourmolu style) instead of
+-- aligning them under the scrutinee.
+vim.g.haskell_indent_disable_case = 1

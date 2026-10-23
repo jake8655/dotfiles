@@ -33,6 +33,10 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
 
+  -- Haskell indentation. Treesitter has no indents query for Haskell and LSP
+  -- has no indentation capability, so this supplies `indentexpr`.
+  { 'itchyny/vim-haskell-indent' },
+
   {
     -- Fuzzy Finder (files, lsp, etc)
     'dmtrKovalenko/fff.nvim',
