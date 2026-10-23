@@ -1,8 +1,10 @@
+local parsers = { 'javascript', 'typescript', 'tsx', 'c', 'lua', 'vim', 'rust', 'diff', 'haskell', 'python' }
+
 require('nvim-treesitter').setup {
   install_dir = vim.fn.stdpath 'data' .. '/site',
 }
 
-require('nvim-treesitter').install { 'javascript', 'typescript', 'tsx', 'c', 'lua', 'vim', 'rust', 'diff', 'haskell' }
+require('nvim-treesitter').install(parsers)
 
 require('nvim-treesitter-textobjects').setup {
   select = {
@@ -14,13 +16,22 @@ require('nvim-treesitter-textobjects').setup {
 }
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'javascript', 'typescript', 'tsx', 'c', 'lua', 'vim', 'rust', 'diff', 'haskell' },
   callback = function(ev)
+    -- Start Treesitter for every filetype with an installed parser. Parser
+    -- names are not filetypes (e.g. `tsx` is the parser for `typescriptreact`),
+    -- so checking for a parser avoids maintaining a separate list.
+    local ok, parser = pcall(vim.treesitter.get_parser, ev.buf)
+    if not ok or not parser then
+      return
+    end
+
     vim.treesitter.start(ev.buf)
-    -- Haskell ships no treesitter indent queries and its layout rule
-    -- (do/where/let/of) is broken by C-style indents, so don't set
-    -- treesitter indentexpr here. See after/ftplugin/haskell.lua.
-    if vim.bo[ev.buf].filetype ~= 'haskell' then
+
+    -- Treesitter indentation is experimental and needs the language's
+    -- `indents.scm`. Haskell, Vim and diff don't ship one; Haskell's layout
+    -- rule (do/where/let/of) also shouldn't get C-style indents, so keep the
+    -- filetype's own settings. See after/ftplugin/haskell.lua.
+    if vim.treesitter.query.get(parser:lang(), 'indents') then
       vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     end
   end,
