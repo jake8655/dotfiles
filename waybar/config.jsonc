@@ -8,7 +8,7 @@
   "modules-left": ["niri/workspaces", "niri/window"],
   "modules-center": [],
   "modules-right": [
-    "custom/codexbar",
+    //"custom/codexbar",
     "custom/wallpaper",
     "custom/power-profile",
     "pulseaudio",
@@ -41,7 +41,7 @@
   },
   "custom/wallpaper": {
     "exec": "echo W",
-    "format": "| {}",
+    "format": "{}",
     "tooltip": true,
     "tooltip-format": "Wallpaper: left next, right previous",
     "on-click": "/home/jake/.dotfiles/scripts/tools/expand cycle",
