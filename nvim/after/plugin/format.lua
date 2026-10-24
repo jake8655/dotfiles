@@ -68,7 +68,7 @@ conform.setup {
     -- Disable "format_on_save lsp_fallback" for languages that don't
     -- have a well standardized coding style. You can add additional
     -- languages here or re-enable it for the disabled ones.
-    local disable_filetypes = { c = true, cpp = true, plaintex = true, tex = true, text = true }
+    local disable_filetypes = { plaintex = true, tex = true, text = true }
     if vim.g.disable_autoformat or disable_filetypes[vim.bo[bufnr].filetype] then
       return nil
     end
@@ -89,6 +89,9 @@ conform.setup {
   formatters = {
     ['biome-check'] = {
       append_args = { '--unsafe' },
+    },
+    ['clang-format'] = {
+      append_args = { '--style', '{IndentWidth: 4, TabWidth: 4, UseTab: Never}' },
     },
   },
 }
