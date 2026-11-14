@@ -27,7 +27,7 @@
   "custom/computer-status": {
     "exec": "/home/jake/.dotfiles/waybar/computer-status",
     "format": "{}",
-    "interval": 0,
+    "interval": 1,
     "tooltip": false,
     "escape": false
   },
